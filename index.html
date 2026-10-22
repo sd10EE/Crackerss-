@@ -1,1 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dhamaka Crackers - Live Cloud Shop</title>
 
+  <!-- FIREBASE 8 SDK (CENTRAL REALTIME DATABASE) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <style>
+    :root {
+      --primary: #d90429;
+      --secondary: #ef233c;
+      --dark: #0f172a;
+      --light: #ffffff;
+      --gold: #ffb703;
+      --green: #10b981;
+      --eco: #059669;
+    }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+    
+    html, body {
+      background-color: #f1f5f9;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .mobile-container {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,0,0,0.06);
+      padding-bottom: 80px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--dark), var(--primary));
+      color: white;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 { font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 800; }
+    .header-bar { display: flex; align-items: center; justify-content: space-between; gap: 4px; flex-wrap: wrap; }
+    
+    select.lang-select {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      padding: 5px 6px;
+      border-radius: 5px;
+      font-weight: 600;
+      font-size: 11px;
+    }
+    button { cursor: pointer; border: none; border-radius: 5px; padding: 6px 10px; font-weight: 600; transition: 0.2s; }
+    .btn-auth { background: #2563eb; color: #fff; font-size: 11px; }
+    .btn-cart { background: var(--gold); color: #000; font-size: 11px; font-weight: bold; }
+    .btn-safety { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); font-size: 11px; }
+    .btn-admin { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); font-size: 11px; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--secondary); }
+    .btn-buy { background: var(--green); color: #fff; }
+    .btn-buy:hover { background: #059669; }
+    .btn-delete { background: #dc2626; color: #fff; }
+    .btn-delete:hover { background: #b91c1c; }
+    .btn-wa { background: #25d366; color: white; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+
+    .main-body { padding: 10px; width: 100%; flex-grow: 1; }
+
+    /* Admin Panel */
+    #adminSection {
+      display: none;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      border: 1px solid #e2e8f0;
+      border-top: 4px solid var(--primary);
+    }
+    .admin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+    .stat-card { background: #f8fafc; padding: 8px; border-radius: 6px; text-align: center; border-left: 3px solid var(--primary); }
+    .stat-card h4 { font-size: 9px; color: #64748b; text-transform: uppercase; }
+    .stat-card p { font-size: 14px; font-weight: 800; }
+
+    .admin-forms { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+    .form-box { background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; }
+    .form-box h3 { margin-bottom: 6px; font-size: 12px; color: var(--primary); }
+    .form-box input, .form-box select { width: 100%; padding: 7px; margin-bottom: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; }
+
+    .filter-bar { 
+      margin-bottom: 10px; 
+      display: flex; 
+      gap: 6px; 
+      overflow-x: auto; 
+      white-space: nowrap;
+      padding-bottom: 3px;
+    }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .filter-btn { background: #fff; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 12px; font-size: 11px; flex-shrink: 0; }
+    .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .product-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .product-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      position: relative;
+    }
+    .card-img-wrapper { position: relative; width: 100%; height: 150px; background: #e2e8f0; cursor: pointer; }
+    .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .badge-in { position: absolute; top: 6px; right: 6px; background: #dcfce7; color: #166534; font-size: 9px; padding: 3px 6px; border-radius: 3px; font-weight: bold; }
+    .badge-out { position: absolute; top: 6px; right: 6px; background: #fee2e2; color: #991b1b; font-size: 9px; padding: 3px 6px; border-radius: 3px; font-weight: bold; }
+    .badge-green-certified { position: absolute; top: 6px; left: 6px; background: var(--eco); color: white; font-size: 8px; padding: 2px 5px; border-radius: 3px; font-weight: bold; }
+    .card-body { padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+    .product-card h3 { font-size: 13px; font-weight: bold; }
+    .product-card .cat { font-size: 10px; color: #64748b; text-transform: uppercase; }
+    .product-card .price { font-size: 15px; font-weight: 800; color: var(--primary); }
+
+    .qty-control { display: inline-flex; align-items: center; background: #f1f5f9; border-radius: 4px; border: 1px solid #cbd5e1; width: fit-content; }
+    .qty-btn { background: #e2e8f0; padding: 3px 8px; font-size: 12px; }
+    .qty-val { min-width: 24px; text-align: center; font-size: 12px; font-weight: bold; }
+
+    .btn-group { display: flex; gap: 6px; margin-top: 4px; }
+    .btn-group button { flex: 1; padding: 8px; font-size: 11px; }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 250;
+      padding: 10px;
+    }
+    .modal-content {
+      background: white;
+      padding: 14px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .close-btn { font-size: 20px; cursor: pointer; border: none; background: transparent; color: #64748b; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 11px; }
+
+    .status-badge { display: inline-block; padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 4px; }
+    .status-packing { background: #fef3c7; color: #b45309; }
+    .status-ready { background: #dcfce7; color: #15803d; font-weight: 800; border: 1px solid #86efac; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 10px; }
+    table th, table td { border: 1px solid #e2e8f0; padding: 4px; text-align: left; }
+    table th { background: #f8fafc; }
+
+    footer { text-align: center; padding: 15px; color: #94a3b8; font-size: 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-container">
+
+    <div style="background:#fffbe6; color:#92400e; border-bottom: 1px solid #fef08a; text-align:center; padding:5px; font-size:10px; font-weight:bold;">
+      🌿 100% Certified Eco Green Crackers | Dukaan Cash Pickup (COD)
+    </div>
+
+    <header>
+      <h1>🎆 <span id="t_brand">Dhamaka Crackers</span></h1>
+      <div class="header-bar">
+        <button class="btn-safety" onclick="openSafetyModal()">⚠️ Rules</button>
+        <button class="btn-admin" onclick="openSecretPinModal()">⚙️ Seller</button>
+        <div id="userHeaderSection">
+          <button class="btn-auth" onclick="openAuthModal()">👤 Sign In</button>
+        </div>
+        <select class="lang-select" onchange="switchLanguage(this.value)">
+          <option value="hinglish" selected>Hinglish</option>
+          <option value="english">English</option>
+          <option value="hindi">हिंदी</option>
+        </select>
+        <button class="btn-cart" onclick="openCart()">
+          🛒 Cart (<span id="cartCount">0</span>)
+        </button>
+      </div>
+    </header>
+
+    <div class="main-body">
+
+      <!-- SELLER DASHBOARD (PIN: 46242332) -->
+      <div id="adminSection">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">
+          <div>
+            <b style="font-size:12px; color:var(--primary);">☁️ Live Global Cloud Inventory & Orders</b><br>
+            <small style="color:#64748b; font-size:9px;">All Phone Realtime Connected</small>
+          </div>
+          <div style="display:flex; gap:3px;">
+            <button onclick="exportCustomerDataToCSV()" style="background:#10b981; color:#fff; font-size:9px; padding:3px 5px;">📥 Orders CSV</button>
+            <button onclick="exportRegisteredUsersToCSV()" style="background:#6366f1; color:#fff; font-size:9px; padding:3px 5px;">📥 Users CSV</button>
+            <button onclick="closeAdmin()" style="background:#e2e8f0; font-size:9px; padding:3px 5px;">Close</button>
+          </div>
+        </div>
+
+        <div class="admin-stats" id="categoryStats"></div>
+
+        <div class="admin-forms">
+          <!-- Add Product Form -->
+          <div class="form-box">
+            <h3>+ Naya Pataka Jodein (Cloud Par Sabke Liye Save Hoga)</h3>
+            <input type="text" id="newProdName" placeholder="Patake Ka Naam">
+            <div style="display:flex; gap:4px;">
+              <select id="newProdCategory">
+                <option value="Sound Crackers">Sound Crackers (Ladi)</option>
+                <option value="Flower Pots">Flower Pots (Anaar)</option>
+                <option value="Chakkars">Chakkars (Zameen)</option>
+                <option value="Sky Shots">Sky Shots</option>
+                <option value="Rockets">Rockets</option>
+                <option value="Sparklers">Sparklers</option>
+                <option value="Family Combos">Family Combos</option>
+              </select>
+              <label style="display:flex; align-items:center; gap:3px; font-size:10px; white-space:nowrap;">
+                <input type="checkbox" id="newProdGreen" checked> Green
+              </label>
+            </div>
+
+            <div style="display:flex; gap:4px;">
+              <input type="number" id="newProdCost" placeholder="Cost ₹">
+              <input type="number" id="newProdPrice" placeholder="Price ₹">
+              <input type="number" id="newProdStock" placeholder="Qty">
+            </div>
+
+            <button class="btn-primary" style="width:100%; font-size:11px; padding:7px;" onclick="addProductToCloud()">Save Item to Global Store</button>
+          </div>
+
+          <!-- Customer Orders Checklist Box -->
+          <div class="form-box">
+            <h3>Customer Orders (Click to Pack Items)</h3>
+            <div style="max-height: 180px; overflow-y: auto;">
+              <table id="ordersTable">
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Stock Management Table -->
+        <b style="font-size:11px; margin-top:6px; display:block;">Live Global Products (Edit/Delete):</b>
+        <div style="overflow-x:auto; margin-bottom:12px;">
+          <table id="stockTable">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Category</th>
+                <th>Cost</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Update</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- Registered Customer Directory -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+          <b style="font-size:11px;">📋 All Registered Customers:</b>
+          <button onclick="exportRegisteredUsersToCSV()" style="background:#6366f1; color:#fff; font-size:9px; padding:2px 6px;">📥 Export Users</button>
+        </div>
+        <div style="overflow-x:auto; margin-bottom:12px;">
+          <table id="registeredUsersTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Gmail</th>
+                <th>Reg. Date</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- Customer Booking Orders -->
+        <b style="font-size:11px; display:block;">All Cloud Orders:</b>
+        <div style="overflow-x:auto;">
+          <table id="customerFullTable">
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- STOREFRONT -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-size:13px; font-weight:bold;">Available Crackers & Combos</span>
+        <span style="font-size:10px; color:#64748b;">📍 Main Bazar Store</span>
+      </div>
+
+      <div class="filter-bar" id="categoryFilters"></div>
+      <div class="product-grid" id="productGrid"></div>
+
+    </div>
+
+    <!-- CART MODAL -->
+    <div class="modal" id="cartModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <b style="font-size:13px;">Cart / Order Summary</b>
+          <button class="close-btn" onclick="closeCart()">&times;</button>
+        </div>
+        <div id="cartItemsList"></div>
+        
+        <div style="margin-top:10px; border-top:1px dashed #cbd5e1; padding-top:6px; display:flex; justify-content:space-between; font-weight:bold; font-size:13px;">
+          <span>Total Bill:</span>
+          <span>₹<span id="cartTotalPrice">0</span></span>
+        </div>
+
+        <div style="margin-top:8px; background:#fffbe6; padding:6px; border-radius:4px; font-size:10px; line-height:1.4;">
+          📍 <b>Pickup Type:</b> Dukaan par khud aakar cash (COD) dekar saaman collect karein.<br>
+          ⚡ Confirm karne par order Google Cloud & WhatsApp dono par synchronize hoga.
+        </div>
+
+        <div style="margin-top:10px;">
+          <button class="btn-wa" style="width:100%; padding:10px; font-size:12px; font-weight:bold;" onclick="placeDirectOrder()">
+            📲 Confirm & Send Order on WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6-DIGIT ORDER CONFIRMATION POPUP MODAL -->
+    <div class="modal" id="orderSuccessModal">
+      <div class="modal-content" style="text-align:center;">
+        <div style="font-size:36px; margin-bottom:4px;">🎉</div>
+        <h3 style="color:#15803d; font-size:15px;">Order Placed on Cloud!</h3>
+        <p style="font-size:11px; color:#64748b; margin-top:2px;">Aapka order seller dashboard par dispatch ho chuka hai.</p>
+        
+        <div style="background:#f1f5f9; border:2px dashed #0284c7; padding:8px; border-radius:6px; margin:10px 0;">
+          <small style="font-size:10px; color:#475569; font-weight:bold;">AAPKA 6-DIGIT UNIQUE ORDER ID:</small>
+          <div id="popupOrderIdDisplay" style="font-size:22px; font-weight:900; color:var(--primary); letter-spacing:2px; margin:4px 0;">
+            #000000
+          </div>
+          <button onclick="copyCurrentOrderId()" style="background:#e2e8f0; font-size:10px; padding:3px 8px;">📋 Copy Order Code</button>
+        </div>
+
+        <p style="font-size:11px; color:#334155; margin-bottom:10px; line-height:1.4;">
+          Yeh code dukaan par bataiye aur apna patake ka saaman collect kijiye.
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <button class="btn-wa" id="btnPopupSellerWa" style="padding:9px; font-size:12px;">
+            📲 Open WhatsApp Chat (9760743086)
+          </button>
+          <button style="background:#0284c7; color:#fff; padding:9px; font-size:12px;" onclick="closeSuccessModal()">
+            Done (Theek Hai)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SELLER PACK INSPECT MODAL (WITH 'ORDER IS READY' BUTTON) -->
+    <div class="modal" id="sellerPackModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 style="color:var(--primary); font-size:14px;">📦 Pack Customer Order</h3>
+          <button class="close-btn" onclick="closeSellerPackModal()">&times;</button>
+        </div>
+        <div id="sellerPackDetails"></div>
+        <div style="margin-top:10px; border-top:1px dashed #cbd5e1; padding-top:8px;">
+          <button id="btnOrderReadyAction" class="btn-buy" style="width:100%; padding:10px; font-size:12px;" onclick="markOrderReadyAndNotify()">
+            ✅ Saaman Pack Ho Gaya - Click 'Order is Ready'
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTH MODAL -->
+    <div class="modal" id="authModal">
+      <div class="modal-content" style="max-width:380px;">
+        <div class="modal-header">
+          <h3 style="color:var(--primary); font-size:14px;">Customer Sign Up / Login</h3>
+          <button class="close-btn" onclick="closeAuthModal()">&times;</button>
+        </div>
+        <input type="text" id="regName" placeholder="Aapka Poora Naam" style="width:100%; padding:8px; margin-bottom:6px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px;">
+        <input type="tel" id="regPhone" placeholder="Mobile Number (10 Digits)" style="width:100%; padding:8px; margin-bottom:6px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px;">
+        <input type="email" id="regGmail" placeholder="Aapka Gmail (example@gmail.com)" style="width:100%; padding:8px; margin-bottom:6px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px;">
+        <button class="btn-buy" style="width:100%; padding:8px; font-size:12px;" onclick="completeRegistration()">Register & Save to Cloud</button>
+      </div>
+    </div>
+
+    <!-- PIN MODAL (PIN: 46242332) -->
+    <div class="modal" id="pinModal">
+      <div class="modal-content" style="max-width:280px; text-align:center;">
+        <b style="font-size:13px;">Seller Login PIN</b>
+        <input type="password" id="sellerPinInput" placeholder="Enter PIN" style="width:100%; padding:8px; text-align:center; font-size:16px; margin:8px 0; border:1px solid #cbd5e1; border-radius:4px;">
+        <div style="display:flex; gap:6px;">
+          <button style="flex:1; background:#e2e8f0; font-size:11px;" onclick="document.getElementById('pinModal').style.display='none'">Cancel</button>
+          <button class="btn-primary" style="flex:1; font-size:11px;" onclick="verifySellerPin()">Login</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAFETY MODAL -->
+    <div class="modal" id="safetyModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <b style="color:var(--primary); font-size:13px;">⚠️ Safety Rules</b>
+          <button class="close-btn" onclick="closeSafetyModal()">&times;</button>
+        </div>
+        <ul style="font-size:11px; line-height:1.5; padding-left:16px; color:#334155;">
+          <li>Hamesha khuli jagah me patake chalayein.</li>
+          <li>Paas me paani aur ret zaroor rakhein.</li>
+          <li>Chhote bachho par bade log dhyan rakhein.</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>
+      <span>&copy; 2026 Dhamaka Crackers. Realtime Cloud Connected.</span>
+    </footer>
+
+  </div>
+
+  <script>
+    const SELLER_WHATSAPP_PHONE = "919760743086"; 
+    const ADMIN_PIN = "46242332";
+
+    /* =========================================================
+       🔥 AAPKI OFFICIAL FIREBASE CONFIGURATION (LIVE CONNECTED)
+       ========================================================= */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDcfo3Uq-wHvi4mDmC8Mv-QO6mgE-GPBso",
+      authDomain: "crackerss-ed189.firebaseapp.com",
+      databaseURL: "https://crackerss-ed189-default-rtdb.firebaseio.com",
+      projectId: "crackerss-ed189",
+      storageBucket: "crackerss-ed189.firebasestorage.app",
+      messagingSenderId: "896029101443",
+      appId: "1:896029101443:web:ee94db05b2e2fea5ee3ab6",
+      measurementId: "G-WGF0JZXQW6"
+    };
+
+    let isCloudActive = false;
+    let db = null;
+
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        isCloudActive = true;
+      }
+    } catch (e) {
+      console.warn("Firebase initialization notice:", e);
+    }
+
+    let currentUser = JSON.parse(localStorage.getItem('crackers_current_user')) || null;
+    let orders = JSON.parse(localStorage.getItem('crackers_orders')) || [];
+    let registeredUsers = JSON.parse(localStorage.getItem('crackers_users')) || [];
+    let cart = [];
+    let activeFilter = 'All';
+    let cardQuantities = {};
+    let currentActiveOrderId = "";
+    let activeInspectingOrderId = null;
+
+    let products = JSON.parse(localStorage.getItem('crackers_db')) || [
+      {
+        id: "1",
+        name: "Special 1000 Chataak Ladi",
+        category: "Sound Crackers",
+        cost: 260,
+        price: 450,
+        stock: 20,
+        isGreen: true,
+        photo: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"
+      },
+      {
+        id: "2",
+        name: "Color Flower Pots (Anaar 10 Pcs)",
+        category: "Flower Pots",
+        cost: 160,
+        price: 280,
+        stock: 15,
+        isGreen: true,
+        photo: "https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?w=400"
+      },
+      {
+        id: "3",
+        name: "Disco Ground Zameen Chakkar",
+        category: "Chakkars",
+        cost: 110,
+        price: 190,
+        stock: 25,
+        isGreen: true,
+        photo: "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=400"
+      }
+    ];
+
+    /* --- REALTIME CLOUD SYNC LISTENERS --- */
+    function initCloudSync() {
+      if (!isCloudActive) return;
+
+      // 1. Sync Products Globally
+      db.ref('products').on('value', (snap) => {
+        const val = snap.val();
+        if (val) {
+          products = Object.values(val);
+          localStorage.setItem('crackers_db', JSON.stringify(products));
+          renderStore();
+          renderAdminDashboard();
+        } else {
+          products.forEach(p => db.ref('products/' + p.id).set(p));
+        }
+      });
+
+      // 2. Sync Orders Globally for Seller
+      db.ref('orders').on('value', (snap) => {
+        const val = snap.val();
+        if (val) {
+          orders = Object.values(val).reverse();
+          localStorage.setItem('crackers_orders', JSON.stringify(orders));
+          renderAdminDashboard();
+        }
+      });
+
+      // 3. Sync Registered Users Globally
+      db.ref('users').on('value', (snap) => {
+        const val = snap.val();
+        if (val) {
+          registeredUsers = Object.values(val);
+          localStorage.setItem('crackers_users', JSON.stringify(registeredUsers));
+          renderAdminDashboard();
+        }
+      });
+    }
+
+    function generateUnique6DigitOrderId() {
+      return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    function saveDB() {
+      localStorage.setItem('crackers_db', JSON.stringify(products));
+      localStorage.setItem('crackers_orders', JSON.stringify(orders));
+      localStorage.setItem('crackers_users', JSON.stringify(registeredUsers));
+      localStorage.setItem('crackers_current_user', JSON.stringify(currentUser));
+      renderStore();
+      renderAdminDashboard();
+      updateUserHeaderUI();
+    }
+
+    function renderStore() {
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = '';
+      
+      const filtered = activeFilter === 'All' ? products : products.filter(p => p.category === activeFilter);
+
+      filtered.forEach(p => {
+        const inStock = p.stock > 0;
+        if (!cardQuantities[p.id]) cardQuantities[p.id] = 1;
+
+        grid.innerHTML += `
+          <div class="product-card">
+            ${p.isGreen ? `<span class="badge-green-certified">🌿 Eco Green</span>` : ''}
+            <span class="${inStock ? 'badge-in' : 'badge-out'}">${inStock ? 'In Stock' : 'Out of Stock'}</span>
+            
+            <div class="card-img-wrapper">
+              <img src="${p.photo || 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400'}" alt="${p.name}">
+            </div>
+
+            <div class="card-body">
+              <h3>${p.name}</h3>
+              <div class="cat">${p.category}</div>
+              <div class="price">₹${p.price}</div>
+              
+              ${inStock ? `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                  <span style="font-size:11px;">Qty:</span>
+                  <div class="qty-control">
+                    <button class="qty-btn" onclick="changeQty('${p.id}', -1)">-</button>
+                    <span class="qty-val" id="qty_${p.id}">${cardQuantities[p.id]}</span>
+                    <button class="qty-btn" onclick="changeQty('${p.id}', 1)">+</button>
+                  </div>
+                </div>
+                <div class="btn-group">
+                  <button class="btn-primary" onclick="addToCart('${p.id}')">Add to Cart</button>
+                  <button class="btn-buy" onclick="buyNow('${p.id}')">⚡ Buy Now</button>
+                </div>
+              ` : `<div style="text-align:center; color:red; font-size:10px; font-weight:bold; padding:4px;">Out of Stock</div>`}
+            </div>
+          </div>
+        `;
+      });
+
+      const categories = ['All', ...new Set(products.map(p => p.category))];
+      document.getElementById('categoryFilters').innerHTML = categories.map(cat => 
+        `<button class="filter-btn ${activeFilter === cat ? 'active' : ''}" onclick="filterCat('${cat}')">${cat}</button>`
+      ).join('');
+    }
+
+    function filterCat(c) {
+      activeFilter = c;
+      renderStore();
+    }
+
+    function changeQty(id, delta) {
+      const prod = products.find(p => String(p.id) === String(id));
+      let next = (cardQuantities[id] || 1) + delta;
+      if (next < 1) next = 1;
+      if (next > prod.stock) next = prod.stock;
+      cardQuantities[id] = next;
+      const el = document.getElementById(`qty_${id}`);
+      if (el) el.innerText = next;
+    }
+
+    function addToCart(id) {
+      const qty = cardQuantities[id] || 1;
+      const prod = products.find(p => String(p.id) === String(id));
+      const exist = cart.find(c => String(c.id) === String(id));
+      if (exist) {
+        if (exist.qty + qty > prod.stock) return alert(`Stock limit reached! Max: ${prod.stock}`);
+        exist.qty += qty;
+      } else {
+        cart.push({ id: prod.id, name: prod.name, price: prod.price, qty: qty });
+      }
+      updateCartBadge();
+      alert("Pataka cart me add ho gaya!");
+    }
+
+    function buyNow(id) {
+      const qty = cardQuantities[id] || 1;
+      const prod = products.find(p => String(p.id) === String(id));
+      cart = [{ id: prod.id, name: prod.name, price: prod.price, qty: qty }];
+      updateCartBadge();
+      openCart();
+    }
+
+    function changeCartItemQty(id, delta) {
+      const item = cart.find(c => String(c.id) === String(id));
+      const prod = products.find(p => String(p.id) === String(id));
+      if (!item) return;
+
+      const next = item.qty + delta;
+      if (next <= 0) {
+        cart = cart.filter(c => String(c.id) !== String(id));
+      } else if (next > prod.stock) {
+        alert("Stock se zyada pieces nahi le sakte!");
+        return;
+      } else {
+        item.qty = next;
+      }
+      updateCartBadge();
+      openCart();
+    }
+
+    function updateCartBadge() {
+      const count = cart.reduce((tot, i) => tot + i.qty, 0);
+      document.getElementById('cartCount').innerText = count;
+    }
+
+    function openCart() {
+      const list = document.getElementById('cartItemsList');
+      list.innerHTML = '';
+      let total = 0;
+      if (cart.length === 0) {
+        list.innerHTML = `<div style="text-align:center; padding:15px; color:#64748b; font-size:11px;">Cart khali hai</div>`;
+      } else {
+        cart.forEach(item => {
+          const itemTotal = item.price * item.qty;
+          total += itemTotal;
+          list.innerHTML += `
+            <div class="cart-item">
+              <div>
+                <b>${item.name}</b><br>
+                <small>₹${item.price} each</small>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <div class="qty-control">
+                  <button class="qty-btn" onclick="changeCartItemQty('${item.id}', -1)">-</button>
+                  <span class="qty-val">${item.qty}</span>
+                  <button class="qty-btn" onclick="changeCartItemQty('${item.id}', 1)">+</button>
+                </div>
+                <b style="width:45px; text-align:right;">₹${itemTotal}</b>
+              </div>
+            </div>
+          `;
+        });
+      }
+      document.getElementById('cartTotalPrice').innerText = total;
+      document.getElementById('cartModal').style.display = 'flex';
+    }
+
+    function closeCart() {
+      document.getElementById('cartModal').style.display = 'none';
+    }
+
+    /* --- DIRECT ORDER (SAVES TO FIREBASE CLOUD & WHATSAPP) --- */
+    function placeDirectOrder() {
+      if (cart.length === 0) return alert("Aapka cart khali hai!");
+
+      if (!currentUser) {
+        closeCart();
+        openAuthModal();
+        alert("Kripya pehle apna naam aur mobile number enter karein!");
+        return;
+      }
+
+      const orderId = generateUnique6DigitOrderId();
+      currentActiveOrderId = orderId;
+      const totalBill = document.getElementById('cartTotalPrice').innerText;
+
+      // Update cloud product stock
+      cart.forEach(c => {
+        const p = products.find(prod => String(prod.id) === String(c.id));
+        if (p && p.stock >= c.qty) {
+          p.stock -= c.qty;
+          if (isCloudActive) db.ref('products/' + p.id + '/stock').set(p.stock);
+        }
+      });
+
+      const orderObj = {
+        id: orderId,
+        name: currentUser.name,
+        phone: currentUser.phone,
+        gmail: currentUser.gmail || 'N/A',
+        items: [...cart],
+        total: totalBill,
+        date: new Date().toLocaleDateString(),
+        status: 'Packing'
+      };
+
+      // Push to Realtime Cloud
+      if (isCloudActive) {
+        db.ref('orders/' + orderId).set(orderObj);
+      }
+      orders.unshift(orderObj);
+
+      let itemsLines = cart.map(i => `• ${i.name} (Qty: ${i.qty}) = Rs.${i.price * i.qty}`).join("\n");
+
+      let plainWaMsg = `🎆 DHAMAKA CRACKERS SHOP\n` +
+                       `ORDER ID: #${orderId}\n` +
+                       `--------------------------------\n` +
+                       `CUSTOMER DETAILS:\n` +
+                       `Name: ${currentUser.name}\n` +
+                       `Mobile: ${currentUser.phone}\n` +
+                       `Type: Dukaan Direct Cash Pickup\n` +
+                       `--------------------------------\n` +
+                       `ITEMS BOOKED:\n` +
+                       `${itemsLines}\n` +
+                       `--------------------------------\n` +
+                       `TOTAL BILL: Rs. ${totalBill}\n` +
+                       `Status: Placed & Ready for Pickup\n\n` +
+                       `📍 Shop: Main Bazar, Near Clock Tower`;
+
+      let encodedUrl = `https://wa.me/${SELLER_WHATSAPP_PHONE}?text=` + encodeURIComponent(plainWaMsg);
+
+      document.getElementById('popupOrderIdDisplay').innerText = `#${orderId}`;
+      document.getElementById('btnPopupSellerWa').onclick = function() {
+        window.location.href = encodedUrl;
+      };
+
+      cart = [];
+      updateCartBadge();
+      closeCart();
+      saveDB();
+
+      document.getElementById('orderSuccessModal').style.display = 'flex';
+    }
+
+    function copyCurrentOrderId() {
+      if (!currentActiveOrderId) return;
+      navigator.clipboard.writeText(`#${currentActiveOrderId}`).then(() => {
+        alert(`Order Code #${currentActiveOrderId} copy ho gaya!`);
+      });
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('orderSuccessModal').style.display = 'none';
+    }
+
+    function completeRegistration() {
+      const name = document.getElementById('regName').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const gmail = document.getElementById('regGmail').value.trim() || 'N/A';
+
+      if (!name || phone.length < 10) {
+        return alert("Kripya poora naam aur 10-digit mobile number dalein!");
+      }
+
+      const newUser = { id: Date.now(), name, phone, gmail, regDate: new Date().toLocaleDateString() };
+      
+      // Save globally to Cloud
+      if (isCloudActive) {
+        db.ref('users/' + phone).set(newUser);
+      }
+      registeredUsers.push(newUser);
+      currentUser = newUser;
+      saveDB();
+      closeAuthModal();
+      alert(`Namaste ${name}! Details save ho chuki hain.`);
+    }
+
+    function updateUserHeaderUI() {
+      const sec = document.getElementById('userHeaderSection');
+      if (currentUser) {
+        sec.innerHTML = `<button onclick="logoutUser()" style="background:#ef4444; color:#fff; font-size:10px; padding:5px 7px;">Logout</button>`;
+      } else {
+        sec.innerHTML = `<button class="btn-auth" onclick="openAuthModal()">👤 Sign In</button>`;
+      }
+    }
+
+    function logoutUser() {
+      currentUser = null;
+      saveDB();
+      alert("Aap logout ho chuke hain.");
+    }
+
+    function openAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
+    function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
+    function openSafetyModal() { document.getElementById('safetyModal').style.display = 'flex'; }
+    function closeSafetyModal() { document.getElementById('safetyModal').style.display = 'none'; }
+    function openSecretPinModal() { document.getElementById('pinModal').style.display = 'flex'; }
+
+    function verifySellerPin() {
+      if (document.getElementById('sellerPinInput').value === ADMIN_PIN) {
+        document.getElementById('pinModal').style.display = 'none';
+        document.getElementById('adminSection').style.display = 'block';
+        renderAdminDashboard();
+      } else {
+        alert("Galat PIN!");
+      }
+    }
+
+    function closeAdmin() {
+      document.getElementById('adminSection').style.display = 'none';
+    }
+
+    function renderAdminDashboard() {
+      let totalPcs = 0;
+      let totalEstimatedProfit = 0;
+      products.forEach(p => {
+        totalPcs += Number(p.stock);
+        totalEstimatedProfit += ((Number(p.price) - Number(p.cost || 0)) * Number(p.stock));
+      });
+
+      document.getElementById('categoryStats').innerHTML = `
+        <div class="stat-card">
+          <h4>Total Stock</h4>
+          <p>${totalPcs} Pcs</p>
+        </div>
+        <div class="stat-card" style="border-left-color:#10b981;">
+          <h4>Est. Profit</h4>
+          <p style="color:#10b981;">₹${totalEstimatedProfit}</p>
+        </div>
+      `;
+
+      // Live Cloud Products Table (Seller can Update/Delete)
+      const stockTableBody = document.querySelector('#stockTable tbody');
+      stockTableBody.innerHTML = '';
+      products.forEach(p => {
+        stockTableBody.innerHTML += `
+          <tr>
+            <td><b>${p.name}</b></td>
+            <td>${p.category}</td>
+            <td>₹${p.cost || 0}</td>
+            <td><b>₹${p.price}</b></td>
+            <td><b>${p.stock}</b></td>
+            <td>
+              <input type="number" id="update_qty_${p.id}" value="${p.stock}" style="width:36px; padding:2px;">
+              <button onclick="updateStockPiece('${p.id}')" style="background:var(--primary); color:white; padding:2px 4px; font-size:9px;">Save</button>
+            </td>
+            <td>
+              <button onclick="deleteProductById('${p.id}')" class="btn-delete" style="padding:2px 5px; font-size:9px;">Del</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      // Orders Packing Table
+      const ordersTableBody = document.querySelector('#ordersTable tbody');
+      ordersTableBody.innerHTML = '';
+      orders.forEach(o => {
+        const isReady = o.status === 'Ready';
+        ordersTableBody.innerHTML += `
+          <tr onclick="openSellerPackModal('${o.id}')" style="cursor:pointer;">
+            <td><b style="color:var(--primary);">#${o.id}</b></td>
+            <td>${o.name}</td>
+            <td>₹${o.total}</td>
+            <td><span class="status-badge ${isReady ? 'status-ready' : 'status-packing'}">${isReady ? 'Ready' : 'Packing'}</span></td>
+            <td><button style="background:#0284c7; color:#fff; font-size:9px; padding:2px 4px;">Pack</button></td>
+          </tr>
+        `;
+      });
+
+      // Registered Users Table
+      const usersTableBody = document.querySelector('#registeredUsersTable tbody');
+      usersTableBody.innerHTML = '';
+      registeredUsers.forEach(u => {
+        usersTableBody.innerHTML += `
+          <tr>
+            <td><b>${u.name}</b></td>
+            <td><a href="tel:${u.phone}" style="color:#0284c7;">${u.phone}</a></td>
+            <td>${u.gmail}</td>
+            <td>${u.regDate || 'N/A'}</td>
+          </tr>
+        `;
+      });
+
+      // Customer Booking Orders
+      const tbody = document.querySelector('#customerFullTable tbody');
+      tbody.innerHTML = '';
+      orders.forEach(o => {
+        const itemsList = o.items.map(it => `${it.name} (x${it.qty})`).join(', ');
+        tbody.innerHTML += `
+          <tr>
+            <td><b>#${o.id}</b></td>
+            <td>${o.name}</td>
+            <td><a href="tel:${o.phone}" style="color:#0284c7;">${o.phone}</a></td>
+            <td><small>${itemsList}</small></td>
+            <td>₹${o.total}</td>
+            <td>${o.date}</td>
+            <td><span class="status-badge ${o.status === 'Ready' ? 'status-ready' : 'status-packing'}">${o.status}</span></td>
+          </tr>
+        `;
+      });
+    }
+
+    function addProductToCloud() {
+      const name = document.getElementById('newProdName').value.trim();
+      const category = document.getElementById('newProdCategory').value;
+      const isGreen = document.getElementById('newProdGreen').checked;
+      const cost = Number(document.getElementById('newProdCost').value) || 0;
+      const price = Number(document.getElementById('newProdPrice').value);
+      const stock = Number(document.getElementById('newProdStock').value);
+
+      if (!name || isNaN(price) || isNaN(stock)) return alert("Sahi details bharein!");
+
+      const newId = Date.now().toString();
+      const newProduct = {
+        id: newId,
+        name,
+        category,
+        isGreen,
+        cost,
+        price,
+        stock,
+        photo: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"
+      };
+
+      if (isCloudActive) {
+        db.ref('products/' + newId).set(newProduct);
+      }
+      products.push(newProduct);
+      saveDB();
+      alert("Pataka Global Cloud me save ho gaya! Sabhi users ko live dikhega.");
+    }
+
+    function updateStockPiece(id) {
+      const newStock = Number(document.getElementById(`update_qty_${id}`).value);
+      const prod = products.find(p => String(p.id) === String(id));
+      if (prod) {
+        prod.stock = newStock;
+        if (isCloudActive) db.ref('products/' + id + '/stock').set(newStock);
+        saveDB();
+        alert(`${prod.name} ka live stock update ho gaya!`);
+      }
+    }
+
+    function deleteProductById(id) {
+      if (!confirm("Kya aap sach me is patake ko delete karna chahte hain?")) return;
+      if (isCloudActive) db.ref('products/' + id).remove();
+      products = products.filter(p => String(p.id) !== String(id));
+      saveDB();
+      alert("Product permanently delete ho gaya!");
+    }
+
+    function openSellerPackModal(orderId) {
+      const order = orders.find(o => String(o.id) === String(orderId));
+      if (!order) return;
+      activeInspectingOrderId = orderId;
+
+      const detailsDiv = document.getElementById('sellerPackDetails');
+      const isReady = order.status === 'Ready';
+
+      let itemsHtml = order.items.map((it) => `
+        <div style="display:flex; justify-content:space-between; background:#f8fafc; padding:4px 8px; border-radius:4px; margin-bottom:3px; border:1px solid #e2e8f0; font-size:10px;">
+          <span>• <b>${it.name}</b></span>
+          <span style="font-weight:bold;">Qty: ${it.qty}</span>
+        </div>
+      `).join('');
+
+      detailsDiv.innerHTML = `
+        <div style="margin-bottom:8px; background:#eff6ff; padding:6px; border-radius:4px; font-size:11px;">
+          <p><b>Order ID:</b> #${order.id} | <b>Date:</b> ${order.date}</p>
+          <p><b>Customer:</b> ${order.name} | <b>Phone:</b> ${order.phone}</p>
+        </div>
+        <h4 style="margin-bottom:4px; font-size:11px;">Items Checklist:</h4>
+        ${itemsHtml}
+        <div style="font-size:12px; font-weight:bold; margin-top:6px; text-align:right;">Total Bill: ₹${order.total}</div>
+      `;
+
+      const btn = document.getElementById('btnOrderReadyAction');
+      if (isReady) {
+        btn.innerText = "✅ Order Already Marked as READY";
+        btn.disabled = true;
+        btn.style.background = "#94a3b8";
+      } else {
+        btn.innerText = "✅ Saaman Pack Ho Gaya - Click 'Order is Ready'";
+        btn.disabled = false;
+        btn.style.background = "var(--green)";
+      }
+
+      document.getElementById('sellerPackModal').style.display = 'flex';
+    }
+
+    function closeSellerPackModal() {
+      document.getElementById('sellerPackModal').style.display = 'none';
+      activeInspectingOrderId = null;
+    }
+
+    function markOrderReadyAndNotify() {
+      if (!activeInspectingOrderId) return;
+      const order = orders.find(o => String(o.id) === String(activeInspectingOrderId));
+      if (!order) return;
+
+      order.status = 'Ready';
+      if (isCloudActive) db.ref('orders/' + order.id + '/status').set('Ready');
+      saveDB();
+
+      const waMsg = `Hello *${order.name}*,%0A%0A` +
+                    `Order ID: *#${order.id}*%0A` +
+                    `*YOUR ORDER IS READY!*%0A%0A` +
+                    `Aapka patako ka saaman pack ho chuka hai. Kripya dukaan par aakar cash dekar apna order collect karein.%0A` +
+                    `*Total Bill:* Rs. ${order.total}%0A%0A` +
+                    `_Dhamaka Crackers Store, Main Bazar_`;
+
+      window.open(`https://wa.me/91${order.phone}?text=${waMsg}`, '_blank');
+      closeSellerPackModal();
+      alert(`Order #${order.id} marked as READY!`);
+    }
+
+    function exportCustomerDataToCSV() {
+      if (orders.length === 0) return alert("Koi order data nahi hai!");
+      let csv = "data:text/csv;charset=utf-8,Order ID,Customer Name,Phone,Items,Total,Date,Status\n";
+      orders.forEach(o => {
+        const itemsStr = o.items.map(it => `${it.name} (x${it.qty})`).join(' | ').replace(/"/g, '""');
+        csv += `"#${o.id}","${o.name}","${o.phone}","${itemsStr}","${o.total}","${o.date}","${o.status}"\n`;
+      });
+      const link = document.createElement("a");
+      link.setAttribute("href", encodeURI(csv));
+      link.setAttribute("download", `Live_Orders_Cloud.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function exportRegisteredUsersToCSV() {
+      if (registeredUsers.length === 0) return alert("Koi registered user nahi hai!");
+      let csv = "data:text/csv;charset=utf-8,Customer Name,Mobile Phone,Gmail,Registered Date\n";
+      registeredUsers.forEach(u => {
+        csv += `"${u.name}","${u.phone}","${u.gmail}","${u.regDate || 'N/A'}"\n`;
+      });
+      const link = document.createElement("a");
+      link.setAttribute("href", encodeURI(csv));
+      link.setAttribute("download", `Registered_Users_Cloud.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function switchLanguage(lang) {
+      // Language Handler
+    }
+
+    // Initialize application & Cloud sync
+    initCloudSync();
+    updateUserHeaderUI();
+    renderStore();
+  </script>
+</body>
+</html>
