@@ -81,7 +81,6 @@
 
     .main-body { padding: 10px; width: 100%; flex-grow: 1; }
 
-    /* Admin Panel */
     #adminSection {
       display: none;
       background: #ffffff;
@@ -141,7 +140,6 @@
     .btn-group { display: flex; gap: 6px; margin-top: 4px; }
     .btn-group button { flex: 1; padding: 8px; font-size: 11px; }
 
-    /* Modals */
     .modal {
       display: none;
       position: fixed;
@@ -210,11 +208,11 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">
           <div>
             <b style="font-size:12px; color:var(--primary);">☁️ Live Global Cloud Inventory & Orders</b><br>
-            <small style="color:#64748b; font-size:9px;">All Phone Realtime Connected</small>
+            <small style="color:#64748b; font-size:9px;">All Phones Realtime Connected</small>
           </div>
           <div style="display:flex; gap:3px;">
-            <button onclick="exportCustomerDataToCSV()" style="background:#10b981; color:#fff; font-size:9px; padding:3px 5px;">📥 Orders CSV</button>
-            <button onclick="exportRegisteredUsersToCSV()" style="background:#6366f1; color:#fff; font-size:9px; padding:3px 5px;">📥 Users CSV</button>
+            <button onclick="exportCustomerDataToCSV()" style="background:#10b981; color:#fff; font-size:9px; padding:3px 5px;">📥 Orders</button>
+            <button onclick="exportRegisteredUsersToCSV()" style="background:#6366f1; color:#fff; font-size:9px; padding:3px 5px;">📥 Users</button>
             <button onclick="closeAdmin()" style="background:#e2e8f0; font-size:9px; padding:3px 5px;">Close</button>
           </div>
         </div>
@@ -224,7 +222,7 @@
         <div class="admin-forms">
           <!-- Add Product Form -->
           <div class="form-box">
-            <h3>+ Naya Pataka Jodein (Cloud Par Sabke Liye Save Hoga)</h3>
+            <h3>+ Naya Pataka Jodein (Cloud Par Save Hoga)</h3>
             <input type="text" id="newProdName" placeholder="Patake Ka Naam">
             <div style="display:flex; gap:4px;">
               <select id="newProdCategory">
@@ -246,6 +244,8 @@
               <input type="number" id="newProdPrice" placeholder="Price ₹">
               <input type="number" id="newProdStock" placeholder="Qty">
             </div>
+
+            <input type="text" id="newProdPhotoUrl" placeholder="Image URL (Optional)">
 
             <button class="btn-primary" style="width:100%; font-size:11px; padding:7px;" onclick="addProductToCloud()">Save Item to Global Store</button>
           </div>
@@ -270,7 +270,7 @@
           </div>
         </div>
 
-        <!-- Live Stock Management Table -->
+        <!-- Live Stock Management Table With Edit & Delete -->
         <b style="font-size:11px; margin-top:6px; display:block;">Live Global Products (Edit/Delete):</b>
         <div style="overflow-x:auto; margin-bottom:12px;">
           <table id="stockTable">
@@ -281,7 +281,7 @@
                 <th>Cost</th>
                 <th>Price</th>
                 <th>Stock</th>
-                <th>Update</th>
+                <th>Quick</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -396,7 +396,56 @@
       </div>
     </div>
 
-    <!-- SELLER PACK INSPECT MODAL (WITH 'ORDER IS READY' BUTTON) -->
+    <!-- EDIT PRODUCT DETAILS MODAL (RESTORED) -->
+    <div class="modal" id="editProductModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 style="color:var(--primary); font-size:14px;">✏️ Edit Pataka Details</h3>
+          <button class="close-btn" onclick="closeEditModal()">&times;</button>
+        </div>
+        <input type="hidden" id="edit_prod_id">
+        
+        <label style="font-size:10px; font-weight:bold; color:#64748b;">Pataka Name:</label>
+        <input type="text" id="edit_prod_name" style="width:100%; padding:6px; margin-bottom:6px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px;">
+
+        <label style="font-size:10px; font-weight:bold; color:#64748b;">Category:</label>
+        <select id="edit_prod_category" style="width:100%; padding:6px; margin-bottom:6px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px;">
+          <option value="Sound Crackers">Sound Crackers (Ladi)</option>
+          <option value="Flower Pots">Flower Pots (Anaar)</option>
+          <option value="Chakkars">Chakkars (Zameen)</option>
+          <option value="Sky Shots">Sky Shots</option>
+          <option value="Rockets">Rockets</option>
+          <option value="Sparklers">Sparklers</option>
+          <option value="Family Combos">Family Combos</option>
+        </select>
+
+        <div style="display:flex; gap:4px;">
+          <div style="flex:1;">
+            <label style="font-size:10px; font-weight:bold; color:#64748b;">Cost (₹):</label>
+            <input type="number" id="edit_prod_cost" style="width:100%; padding:6px; margin-bottom:6px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px;">
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:10px; font-weight:bold; color:#64748b;">Sell Price (₹):</label>
+            <input type="number" id="edit_prod_price" style="width:100%; padding:6px; margin-bottom:6px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px;">
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:10px; font-weight:bold; color:#64748b;">Stock:</label>
+            <input type="number" id="edit_prod_stock" style="width:100%; padding:6px; margin-bottom:6px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px;">
+          </div>
+        </div>
+
+        <label style="font-size:10px; font-weight:bold; color:#64748b; margin-top:4px; display:block;">Image URL:</label>
+        <input type="text" id="edit_prod_photo" style="width:100%; padding:6px; margin-bottom:8px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px;">
+
+        <div style="display:flex; gap:6px; margin-top: 8px;">
+          <button style="flex:1; background:#e2e8f0; font-size:11px;" onclick="closeEditModal()">Cancel</button>
+          <button style="flex:1; font-size:11px;" class="btn-delete" onclick="deleteProductFromModal()">🗑️ Delete</button>
+          <button style="flex:1; font-size:11px;" class="btn-primary" onclick="saveEditedProduct()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SELLER PACK INSPECT MODAL -->
     <div class="modal" id="sellerPackModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -426,7 +475,7 @@
       </div>
     </div>
 
-    <!-- PIN MODAL (PIN: 46242332) -->
+    <!-- PIN MODAL -->
     <div class="modal" id="pinModal">
       <div class="modal-content" style="max-width:280px; text-align:center;">
         <b style="font-size:13px;">Seller Login PIN</b>
@@ -463,9 +512,6 @@
     const SELLER_WHATSAPP_PHONE = "919760743086"; 
     const ADMIN_PIN = "46242332";
 
-    /* =========================================================
-       🔥 AAPKI OFFICIAL FIREBASE CONFIGURATION (LIVE CONNECTED)
-       ========================================================= */
     const firebaseConfig = {
       apiKey: "AIzaSyDcfo3Uq-wHvi4mDmC8Mv-QO6mgE-GPBso",
       authDomain: "crackerss-ed189.firebaseapp.com",
@@ -487,7 +533,7 @@
         isCloudActive = true;
       }
     } catch (e) {
-      console.warn("Firebase initialization notice:", e);
+      console.warn("Firebase notice:", e);
     }
 
     let currentUser = JSON.parse(localStorage.getItem('crackers_current_user')) || null;
@@ -532,11 +578,10 @@
       }
     ];
 
-    /* --- REALTIME CLOUD SYNC LISTENERS --- */
+    /* --- CLOUD REALTIME LISTENERS --- */
     function initCloudSync() {
       if (!isCloudActive) return;
 
-      // 1. Sync Products Globally
       db.ref('products').on('value', (snap) => {
         const val = snap.val();
         if (val) {
@@ -549,7 +594,6 @@
         }
       });
 
-      // 2. Sync Orders Globally for Seller
       db.ref('orders').on('value', (snap) => {
         const val = snap.val();
         if (val) {
@@ -559,7 +603,6 @@
         }
       });
 
-      // 3. Sync Registered Users Globally
       db.ref('users').on('value', (snap) => {
         const val = snap.val();
         if (val) {
@@ -729,7 +772,6 @@
       document.getElementById('cartModal').style.display = 'none';
     }
 
-    /* --- DIRECT ORDER (SAVES TO FIREBASE CLOUD & WHATSAPP) --- */
     function placeDirectOrder() {
       if (cart.length === 0) return alert("Aapka cart khali hai!");
 
@@ -744,7 +786,6 @@
       currentActiveOrderId = orderId;
       const totalBill = document.getElementById('cartTotalPrice').innerText;
 
-      // Update cloud product stock
       cart.forEach(c => {
         const p = products.find(prod => String(prod.id) === String(c.id));
         if (p && p.stock >= c.qty) {
@@ -764,7 +805,6 @@
         status: 'Packing'
       };
 
-      // Push to Realtime Cloud
       if (isCloudActive) {
         db.ref('orders/' + orderId).set(orderObj);
       }
@@ -824,7 +864,6 @@
 
       const newUser = { id: Date.now(), name, phone, gmail, regDate: new Date().toLocaleDateString() };
       
-      // Save globally to Cloud
       if (isCloudActive) {
         db.ref('users/' + phone).set(newUser);
       }
@@ -889,7 +928,7 @@
         </div>
       `;
 
-      // Live Cloud Products Table (Seller can Update/Delete)
+      // Live Products Table With ✏️ Edit & 🗑️ Delete Action
       const stockTableBody = document.querySelector('#stockTable tbody');
       stockTableBody.innerHTML = '';
       products.forEach(p => {
@@ -905,13 +944,16 @@
               <button onclick="updateStockPiece('${p.id}')" style="background:var(--primary); color:white; padding:2px 4px; font-size:9px;">Save</button>
             </td>
             <td>
-              <button onclick="deleteProductById('${p.id}')" class="btn-delete" style="padding:2px 5px; font-size:9px;">Del</button>
+              <div style="display:flex; gap:2px;">
+                <button onclick="openEditProductModal('${p.id}')" style="background:#f59e0b; color:white; padding:2px 4px; font-size:9px;">✏️ Edit</button>
+                <button onclick="deleteProductById('${p.id}')" class="btn-delete" style="padding:2px 4px; font-size:9px;">Del</button>
+              </div>
             </td>
           </tr>
         `;
       });
 
-      // Orders Packing Table
+      // Orders Table
       const ordersTableBody = document.querySelector('#ordersTable tbody');
       ordersTableBody.innerHTML = '';
       orders.forEach(o => {
@@ -927,7 +969,7 @@
         `;
       });
 
-      // Registered Users Table
+      // Users Table
       const usersTableBody = document.querySelector('#registeredUsersTable tbody');
       usersTableBody.innerHTML = '';
       registeredUsers.forEach(u => {
@@ -940,24 +982,62 @@
           </tr>
         `;
       });
+    }
 
-      // Customer Booking Orders
-      const tbody = document.querySelector('#customerFullTable tbody');
-      tbody.innerHTML = '';
-      orders.forEach(o => {
-        const itemsList = o.items.map(it => `${it.name} (x${it.qty})`).join(', ');
-        tbody.innerHTML += `
-          <tr>
-            <td><b>#${o.id}</b></td>
-            <td>${o.name}</td>
-            <td><a href="tel:${o.phone}" style="color:#0284c7;">${o.phone}</a></td>
-            <td><small>${itemsList}</small></td>
-            <td>₹${o.total}</td>
-            <td>${o.date}</td>
-            <td><span class="status-badge ${o.status === 'Ready' ? 'status-ready' : 'status-packing'}">${o.status}</span></td>
-          </tr>
-        `;
-      });
+    /* --- EDIT PATAKA DETAILS LOGIC (RESTORED) --- */
+    function openEditProductModal(id) {
+      const prod = products.find(p => String(p.id) === String(id));
+      if (!prod) return;
+
+      document.getElementById('edit_prod_id').value = prod.id;
+      document.getElementById('edit_prod_name').value = prod.name;
+      document.getElementById('edit_prod_category').value = prod.category;
+      document.getElementById('edit_prod_cost').value = prod.cost || 0;
+      document.getElementById('edit_prod_price').value = prod.price;
+      document.getElementById('edit_prod_stock').value = prod.stock;
+      document.getElementById('edit_prod_photo').value = prod.photo || '';
+
+      document.getElementById('editProductModal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+      document.getElementById('editProductModal').style.display = 'none';
+    }
+
+    function saveEditedProduct() {
+      const id = document.getElementById('edit_prod_id').value;
+      const prod = products.find(p => String(p.id) === String(id));
+      if (!prod) return;
+
+      const name = document.getElementById('edit_prod_name').value.trim();
+      const category = document.getElementById('edit_prod_category').value;
+      const cost = Number(document.getElementById('edit_prod_cost').value);
+      const price = Number(document.getElementById('edit_prod_price').value);
+      const stock = Number(document.getElementById('edit_prod_stock').value);
+      const photo = document.getElementById('edit_prod_photo').value.trim();
+
+      if (!name || isNaN(price) || isNaN(stock)) return alert("Sahi name aur price dalein!");
+
+      prod.name = name;
+      prod.category = category;
+      prod.cost = cost;
+      prod.price = price;
+      prod.stock = stock;
+      if (photo) prod.photo = photo;
+
+      if (isCloudActive) {
+        db.ref('products/' + id).update(prod);
+      }
+      saveDB();
+      closeEditModal();
+      alert(`"${name}" ke details update ho gaye!`);
+    }
+
+    function deleteProductFromModal() {
+      const id = document.getElementById('edit_prod_id').value;
+      if (!id) return;
+      closeEditModal();
+      deleteProductById(id);
     }
 
     function addProductToCloud() {
@@ -967,6 +1047,7 @@
       const cost = Number(document.getElementById('newProdCost').value) || 0;
       const price = Number(document.getElementById('newProdPrice').value);
       const stock = Number(document.getElementById('newProdStock').value);
+      const photo = document.getElementById('newProdPhotoUrl').value.trim();
 
       if (!name || isNaN(price) || isNaN(stock)) return alert("Sahi details bharein!");
 
@@ -979,7 +1060,7 @@
         cost,
         price,
         stock,
-        photo: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"
+        photo: photo || "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"
       };
 
       if (isCloudActive) {
@@ -987,7 +1068,7 @@
       }
       products.push(newProduct);
       saveDB();
-      alert("Pataka Global Cloud me save ho gaya! Sabhi users ko live dikhega.");
+      alert("Pataka Global Cloud me save ho gaya!");
     }
 
     function updateStockPiece(id) {
@@ -997,7 +1078,7 @@
         prod.stock = newStock;
         if (isCloudActive) db.ref('products/' + id + '/stock').set(newStock);
         saveDB();
-        alert(`${prod.name} ka live stock update ho gaya!`);
+        alert(`${prod.name} stock update ho gaya!`);
       }
     }
 
@@ -1103,11 +1184,8 @@
       document.body.removeChild(link);
     }
 
-    function switchLanguage(lang) {
-      // Language Handler
-    }
+    function switchLanguage(lang) {}
 
-    // Initialize application & Cloud sync
     initCloudSync();
     updateUserHeaderUI();
     renderStore();
