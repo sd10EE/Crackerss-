@@ -101,6 +101,33 @@
     .form-box h3 { margin-bottom: 6px; font-size: 12px; color: var(--primary); }
     .form-box input, .form-box select { width: 100%; padding: 7px; margin-bottom: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; }
 
+    /* Upload Box Styling */
+    .file-uploader-box {
+      border: 2px dashed #3b82f6;
+      background: #eff6ff;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .file-uploader-box input[type="file"] { display: none; }
+    .file-preview-wrap {
+      width: 100%;
+      height: 120px;
+      background: #000;
+      border-radius: 4px;
+      overflow: hidden;
+      display: none;
+      margin-top: 6px;
+      position: relative;
+    }
+    .file-preview-wrap img, .file-preview-wrap video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .filter-bar { 
       margin-bottom: 10px; 
       display: flex; 
@@ -124,11 +151,13 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.04);
       position: relative;
     }
-    .card-img-wrapper { position: relative; width: 100%; height: 150px; background: #e2e8f0; cursor: pointer; }
-    .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-    .badge-in { position: absolute; top: 6px; right: 6px; background: #dcfce7; color: #166534; font-size: 9px; padding: 3px 6px; border-radius: 3px; font-weight: bold; }
-    .badge-out { position: absolute; top: 6px; right: 6px; background: #fee2e2; color: #991b1b; font-size: 9px; padding: 3px 6px; border-radius: 3px; font-weight: bold; }
-    .badge-green-certified { position: absolute; top: 6px; left: 6px; background: var(--eco); color: white; font-size: 8px; padding: 2px 5px; border-radius: 3px; font-weight: bold; }
+    .card-img-wrapper { position: relative; width: 100%; height: 170px; background: #000; }
+    .card-img-wrapper img, .card-img-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .badge-in { position: absolute; top: 6px; right: 6px; background: #dcfce7; color: #166534; font-size: 9px; padding: 3px 6px; border-radius: 3px; font-weight: bold; z-index: 5; }
+    .badge-out { position: absolute; top: 6px; right: 6px; background: #fee2e2; color: #991b1b; font-size: 9px; padding: 3px 6px; border-radius: 3px; font-weight: bold; z-index: 5; }
+    .badge-green-certified { position: absolute; top: 6px; left: 6px; background: var(--eco); color: white; font-size: 8px; padding: 2px 5px; border-radius: 3px; font-weight: bold; z-index: 5; }
+    .media-type-badge { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.65); color: #fff; font-size: 8px; padding: 2px 5px; border-radius: 3px; z-index: 5; }
+    
     .card-body { padding: 10px; display: flex; flex-direction: column; gap: 4px; }
     .product-card h3 { font-size: 13px; font-weight: bold; }
     .product-card .cat { font-size: 10px; color: #64748b; text-transform: uppercase; }
@@ -141,7 +170,6 @@
     .btn-group { display: flex; gap: 6px; margin-top: 4px; }
     .btn-group button { flex: 1; padding: 8px; font-size: 11px; }
 
-    /* Store Offline Screen */
     #storeOfflineNotice {
       display: none;
       text-align: center;
@@ -221,8 +249,8 @@
         <!-- LIVE CLOUD & WEBSITE PUBLIC / PRIVATE TOGGLE BUTTON -->
         <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
           <div>
-            <span style="font-size:11px; font-weight:bold; display:block;">Website Visibility (Store Status):</span>
-            <small style="font-size:9px; color:#64748b;">Control whether customers can view products & buy</small>
+            <span style="font-size:11px; font-weight:bold; display:block;">Website Visibility:</span>
+            <small style="font-size:9px; color:#64748b;">Public ko dikhana hai ya dukaan band karni hai</small>
           </div>
           <button id="btnStoreToggle" onclick="toggleStoreVisibility()" style="padding:6px 10px; font-size:11px; font-weight:bold; border-radius:4px;"></button>
         </div>
@@ -230,7 +258,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">
           <div>
             <b style="font-size:12px; color:var(--primary);">☁️ Live Global Cloud Inventory & Orders</b><br>
-            <small style="color:#64748b; font-size:9px;">All Phones Realtime Connected</small>
+            <small style="color:#64748b; font-size:9px;">Direct Phone Image/Video Uploads Active</small>
           </div>
           <div style="display:flex; gap:3px;">
             <button onclick="exportCustomerDataToCSV()" style="background:#10b981; color:#fff; font-size:9px; padding:3px 5px;">📥 Orders</button>
@@ -242,9 +270,9 @@
         <div class="admin-stats" id="categoryStats"></div>
 
         <div class="admin-forms">
-          <!-- Add Product Form -->
+          <!-- Add Product Form With Direct File Uploader -->
           <div class="form-box">
-            <h3>+ Naya Pataka Jodein (Cloud Par Save Hoga)</h3>
+            <h3>+ Naya Pataka Jodein (Direct Media Upload)</h3>
             <input type="text" id="newProdName" placeholder="Patake Ka Naam">
             <div style="display:flex; gap:4px;">
               <select id="newProdCategory">
@@ -267,7 +295,13 @@
               <input type="number" id="newProdStock" placeholder="Qty">
             </div>
 
-            <input type="text" id="newProdPhotoUrl" placeholder="Image URL (Optional)">
+            <!-- DIRECT FILE UPLOAD TRIGGER -->
+            <label class="file-uploader-box" for="newProdFileInput">
+              <span style="font-size:11px; font-weight:bold; color:#2563eb;">📷/🎥 Phone Se Photo Ya Video Chunein</span><br>
+              <small style="font-size:9px; color:#64748b;">(JPG, PNG ya Short MP4 video)</small>
+              <input type="file" id="newProdFileInput" accept="image/*,video/*" onchange="handleFileSelect(event, 'new')">
+            </label>
+            <div id="newMediaPreviewWrapper" class="file-preview-wrap"></div>
 
             <button class="btn-primary" style="width:100%; font-size:11px; padding:7px;" onclick="addProductToCloud()">Save Item to Global Store</button>
           </div>
@@ -361,7 +395,7 @@
         <div class="product-grid" id="productGrid"></div>
       </div>
 
-      <!-- STORE OFFLINE NOTICE (SHOWN TO CUSTOMERS WHEN SELLER TURNS STORE OFF) -->
+      <!-- STORE OFFLINE NOTICE -->
       <div id="storeOfflineNotice">
         <div style="font-size:42px; margin-bottom:10px;">🏪🔒</div>
         <h2 style="font-size:16px; color:#dc2626; margin-bottom:6px;">Dukaan Abhi Band Hai</h2>
@@ -435,7 +469,7 @@
       </div>
     </div>
 
-    <!-- EDIT PRODUCT DETAILS MODAL -->
+    <!-- EDIT PRODUCT DETAILS MODAL (WITH DIRECT FILE UPLOAD) -->
     <div class="modal" id="editProductModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -473,8 +507,12 @@
           </div>
         </div>
 
-        <label style="font-size:10px; font-weight:bold; color:#64748b; margin-top:4px; display:block;">Image URL:</label>
-        <input type="text" id="edit_prod_photo" style="width:100%; padding:6px; margin-bottom:8px; border:1px solid #cbd5e1; border-radius:4px; font-size:11px;">
+        <label class="file-uploader-box" for="editProdFileInput" style="margin-top:6px;">
+          <span style="font-size:11px; font-weight:bold; color:#2563eb;">📷/🎥 Nayi Photo Ya Video Upload Karein</span><br>
+          <small style="font-size:9px; color:#64748b;">(Phone storage se direct chunein)</small>
+          <input type="file" id="editProdFileInput" accept="image/*,video/*" onchange="handleFileSelect(event, 'edit')">
+        </label>
+        <div id="editMediaPreviewWrapper" class="file-preview-wrap"></div>
 
         <div style="display:flex; gap:6px; margin-top: 8px;">
           <button style="flex:1; background:#e2e8f0; font-size:11px;" onclick="closeEditModal()">Cancel</button>
@@ -575,7 +613,7 @@
       console.warn("Firebase notice:", e);
     }
 
-    let isStoreOnline = JSON.parse(localStorage.getItem('crackers_store_online')) !== false; // Default: true
+    let isStoreOnline = JSON.parse(localStorage.getItem('crackers_store_online')) !== false;
     let currentUser = JSON.parse(localStorage.getItem('crackers_current_user')) || null;
     let orders = JSON.parse(localStorage.getItem('crackers_orders')) || [];
     let registeredUsers = JSON.parse(localStorage.getItem('crackers_users')) || [];
@@ -584,6 +622,10 @@
     let cardQuantities = {};
     let currentActiveOrderId = "";
     let activeInspectingOrderId = null;
+
+    // Temporary upload store
+    let newProductMediaData = { type: 'image', data: '' };
+    let editProductMediaData = { type: 'image', data: '' };
 
     let products = JSON.parse(localStorage.getItem('crackers_db')) || [
       {
@@ -594,7 +636,8 @@
         price: 450,
         stock: 20,
         isGreen: true,
-        photo: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"
+        mediaType: "image",
+        media: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"
       },
       {
         id: "2",
@@ -604,7 +647,8 @@
         price: 280,
         stock: 15,
         isGreen: true,
-        photo: "https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?w=400"
+        mediaType: "image",
+        media: "https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?w=400"
       },
       {
         id: "3",
@@ -614,15 +658,86 @@
         price: 190,
         stock: 25,
         isGreen: true,
-        photo: "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=400"
+        mediaType: "image",
+        media: "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=400"
       }
     ];
+
+    /* --- DIRECT IMAGE & VIDEO COMPRESSION / HANDLER --- */
+    function handleFileSelect(event, mode) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const isVideo = file.type.startsWith('video');
+      const isImage = file.type.startsWith('image');
+
+      if (!isVideo && !isImage) {
+        alert("Sirf photo ya video chunein!");
+        return;
+      }
+
+      const reader = new FileReader();
+
+      if (isImage) {
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            // Compress Image on Canvas to keep Firebase lightning fast
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 600;
+            const scaleSize = MAX_WIDTH / img.width;
+            canvas.width = MAX_WIDTH;
+            canvas.height = img.height * scaleSize;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+            if (mode === 'new') {
+              newProductMediaData = { type: 'image', data: compressedBase64 };
+              showMediaPreview('newMediaPreviewWrapper', 'image', compressedBase64);
+            } else {
+              editProductMediaData = { type: 'image', data: compressedBase64 };
+              showMediaPreview('editMediaPreviewWrapper', 'image', compressedBase64);
+            }
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else if (isVideo) {
+        // Video file limit check (Keep videos under 15MB for browser database safety)
+        if (file.size > 15 * 1024 * 1024) {
+          alert("Video bohot badi hai! Kripya 15MB se choti video chunein.");
+          return;
+        }
+        reader.onload = function(e) {
+          const videoBase64 = e.target.result;
+          if (mode === 'new') {
+            newProductMediaData = { type: 'video', data: videoBase64 };
+            showMediaPreview('newMediaPreviewWrapper', 'video', videoBase64);
+          } else {
+            editProductMediaData = { type: 'video', data: videoBase64 };
+            showMediaPreview('editMediaPreviewWrapper', 'video', videoBase64);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function showMediaPreview(wrapperId, type, src) {
+      const wrap = document.getElementById(wrapperId);
+      wrap.style.display = 'block';
+      if (type === 'video') {
+        wrap.innerHTML = `<video src="${src}" controls autoplay muted style="width:100%; height:100%; object-fit:cover;"></video>`;
+      } else {
+        wrap.innerHTML = `<img src="${src}" style="width:100%; height:100%; object-fit:cover;">`;
+      }
+    }
 
     /* --- CLOUD REALTIME LISTENERS --- */
     function initCloudSync() {
       if (!isCloudActive) return;
 
-      // 1. Sync Store Status (Online/Offline)
       db.ref('settings/isOnline').on('value', (snap) => {
         const val = snap.val();
         if (val !== null) {
@@ -632,7 +747,6 @@
         }
       });
 
-      // 2. Sync Products
       db.ref('products').on('value', (snap) => {
         const val = snap.val();
         if (val) {
@@ -645,7 +759,6 @@
         }
       });
 
-      // 3. Sync Orders
       db.ref('orders').on('value', (snap) => {
         const val = snap.val();
         if (val) {
@@ -655,7 +768,6 @@
         }
       });
 
-      // 4. Sync Users
       db.ref('users').on('value', (snap) => {
         const val = snap.val();
         if (val) {
@@ -732,13 +844,19 @@
         const inStock = p.stock > 0;
         if (!cardQuantities[p.id]) cardQuantities[p.id] = 1;
 
+        const isVideo = p.mediaType === 'video';
+        const mediaHtml = isVideo 
+          ? `<video src="${p.media}" controls playsinline preload="metadata" style="width:100%; height:100%; object-fit:cover;"></video>`
+          : `<img src="${p.media || 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400'}" alt="${p.name}">`;
+
         grid.innerHTML += `
           <div class="product-card">
             ${p.isGreen ? `<span class="badge-green-certified">🌿 Eco Green</span>` : ''}
             <span class="${inStock ? 'badge-in' : 'badge-out'}">${inStock ? 'In Stock' : 'Out of Stock'}</span>
+            ${isVideo ? `<span class="media-type-badge">▶ Video Demo</span>` : ''}
             
             <div class="card-img-wrapper">
-              <img src="${p.photo || 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400'}" alt="${p.name}">
+              ${mediaHtml}
             </div>
 
             <div class="card-body">
@@ -1029,7 +1147,7 @@
       products.forEach(p => {
         stockTableBody.innerHTML += `
           <tr>
-            <td><b>${p.name}</b></td>
+            <td><b>${p.name}</b> ${p.mediaType === 'video' ? '🎥' : '📷'}</td>
             <td>${p.category}</td>
             <td>₹${p.cost || 0}</td>
             <td><b>₹${p.price}</b></td>
@@ -1097,7 +1215,7 @@
       });
     }
 
-    /* --- EDIT PATAKA DETAILS LOGIC --- */
+    /* --- EDIT PATAKA DETAILS LOGIC (WITH DIRECT FILE UPLOAD) --- */
     function openEditProductModal(id) {
       const prod = products.find(p => String(p.id) === String(id));
       if (!prod) return;
@@ -1108,7 +1226,17 @@
       document.getElementById('edit_prod_cost').value = prod.cost || 0;
       document.getElementById('edit_prod_price').value = prod.price;
       document.getElementById('edit_prod_stock').value = prod.stock;
-      document.getElementById('edit_prod_photo').value = prod.photo || '';
+
+      editProductMediaData = {
+        type: prod.mediaType || 'image',
+        data: prod.media || ''
+      };
+
+      if (editProductMediaData.data) {
+        showMediaPreview('editMediaPreviewWrapper', editProductMediaData.type, editProductMediaData.data);
+      } else {
+        document.getElementById('editMediaPreviewWrapper').style.display = 'none';
+      }
 
       document.getElementById('editProductModal').style.display = 'flex';
     }
@@ -1127,7 +1255,6 @@
       const cost = Number(document.getElementById('edit_prod_cost').value);
       const price = Number(document.getElementById('edit_prod_price').value);
       const stock = Number(document.getElementById('edit_prod_stock').value);
-      const photo = document.getElementById('edit_prod_photo').value.trim();
 
       if (!name || isNaN(price) || isNaN(stock)) return alert("Sahi name aur price dalein!");
 
@@ -1136,7 +1263,11 @@
       prod.cost = cost;
       prod.price = price;
       prod.stock = stock;
-      if (photo) prod.photo = photo;
+      
+      if (editProductMediaData.data) {
+        prod.media = editProductMediaData.data;
+        prod.mediaType = editProductMediaData.type;
+      }
 
       if (isCloudActive) {
         db.ref('products/' + id).update(prod);
@@ -1160,7 +1291,6 @@
       const cost = Number(document.getElementById('newProdCost').value) || 0;
       const price = Number(document.getElementById('newProdPrice').value);
       const stock = Number(document.getElementById('newProdStock').value);
-      const photo = document.getElementById('newProdPhotoUrl').value.trim();
 
       if (!name || isNaN(price) || isNaN(stock)) return alert("Sahi details bharein!");
 
@@ -1173,7 +1303,8 @@
         cost,
         price,
         stock,
-        photo: photo || "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"
+        mediaType: newProductMediaData.data ? newProductMediaData.type : 'image',
+        media: newProductMediaData.data || "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"
       };
 
       if (isCloudActive) {
@@ -1181,7 +1312,16 @@
       }
       products.push(newProduct);
       saveDB();
-      alert("Pataka Global Cloud me save ho gaya!");
+
+      // Reset Form
+      document.getElementById('newProdName').value = '';
+      document.getElementById('newProdCost').value = '';
+      document.getElementById('newProdPrice').value = '';
+      document.getElementById('newProdStock').value = '';
+      document.getElementById('newMediaPreviewWrapper').style.display = 'none';
+      newProductMediaData = { type: 'image', data: '' };
+
+      alert("Pataka Phone Media ke sath Global Cloud me save ho gaya!");
     }
 
     function updateStockPiece(id) {
