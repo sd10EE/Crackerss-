@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Dhamaka Crackers - Live Cloud Shop</title>
 
-  <!-- FIREBASE 8 SDK (CENTRAL REALTIME DATABASE) -->
+  <!-- FIREBASE 8 SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -81,6 +81,7 @@
 
     .main-body { padding: 10px; width: 100%; flex-grow: 1; }
 
+    /* Admin Panel */
     #adminSection {
       display: none;
       background: #ffffff;
@@ -140,6 +141,17 @@
     .btn-group { display: flex; gap: 6px; margin-top: 4px; }
     .btn-group button { flex: 1; padding: 8px; font-size: 11px; }
 
+    /* Store Offline Screen */
+    #storeOfflineNotice {
+      display: none;
+      text-align: center;
+      padding: 40px 15px;
+      background: #fff;
+      border-radius: 8px;
+      border: 2px dashed #fca5a5;
+      margin-top: 15px;
+    }
+
     .modal {
       display: none;
       position: fixed;
@@ -195,7 +207,7 @@
           <option value="english">English</option>
           <option value="hindi">हिंदी</option>
         </select>
-        <button class="btn-cart" onclick="openCart()">
+        <button class="btn-cart" id="headerCartBtn" onclick="openCart()">
           🛒 Cart (<span id="cartCount">0</span>)
         </button>
       </div>
@@ -205,6 +217,16 @@
 
       <!-- SELLER DASHBOARD (PIN: 46242332) -->
       <div id="adminSection">
+        
+        <!-- LIVE CLOUD & WEBSITE PUBLIC / PRIVATE TOGGLE BUTTON -->
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <span style="font-size:11px; font-weight:bold; display:block;">Website Visibility (Store Status):</span>
+            <small style="font-size:9px; color:#64748b;">Control whether customers can view products & buy</small>
+          </div>
+          <button id="btnStoreToggle" onclick="toggleStoreVisibility()" style="padding:6px 10px; font-size:11px; font-weight:bold; border-radius:4px;"></button>
+        </div>
+
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">
           <div>
             <b style="font-size:12px; color:var(--primary);">☁️ Live Global Cloud Inventory & Orders</b><br>
@@ -328,14 +350,31 @@
         </div>
       </div>
 
-      <!-- STOREFRONT -->
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-        <span style="font-size:13px; font-weight:bold;">Available Crackers & Combos</span>
-        <span style="font-size:10px; color:#64748b;">📍 Main Bazar Store</span>
+      <!-- STOREFRONT FOR CUSTOMERS -->
+      <div id="storefrontWrapper">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-size:13px; font-weight:bold;">Available Crackers & Combos</span>
+          <span style="font-size:10px; color:#64748b;">📍 Main Bazar Store</span>
+        </div>
+
+        <div class="filter-bar" id="categoryFilters"></div>
+        <div class="product-grid" id="productGrid"></div>
       </div>
 
-      <div class="filter-bar" id="categoryFilters"></div>
-      <div class="product-grid" id="productGrid"></div>
+      <!-- STORE OFFLINE NOTICE (SHOWN TO CUSTOMERS WHEN SELLER TURNS STORE OFF) -->
+      <div id="storeOfflineNotice">
+        <div style="font-size:42px; margin-bottom:10px;">🏪🔒</div>
+        <h2 style="font-size:16px; color:#dc2626; margin-bottom:6px;">Dukaan Abhi Band Hai</h2>
+        <p style="font-size:12px; color:#475569; line-height:1.5;">
+          Hamari dukaan filhal offline hai. New booking jald shuru hogi.<br>
+          Kisi zaroori poochna ya saaman ke liye WhatsApp par sampark karein:
+        </p>
+        <div style="margin-top:14px;">
+          <a href="https://wa.me/919760743086" class="btn-wa" style="padding:8px 14px; text-decoration:none; font-size:12px; font-weight:bold; border-radius:5px;">
+            📲 Chat on WhatsApp (9760743086)
+          </a>
+        </div>
+      </div>
 
     </div>
 
@@ -396,7 +435,7 @@
       </div>
     </div>
 
-    <!-- EDIT PRODUCT DETAILS MODAL (RESTORED) -->
+    <!-- EDIT PRODUCT DETAILS MODAL -->
     <div class="modal" id="editProductModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -536,6 +575,7 @@
       console.warn("Firebase notice:", e);
     }
 
+    let isStoreOnline = JSON.parse(localStorage.getItem('crackers_store_online')) !== false; // Default: true
     let currentUser = JSON.parse(localStorage.getItem('crackers_current_user')) || null;
     let orders = JSON.parse(localStorage.getItem('crackers_orders')) || [];
     let registeredUsers = JSON.parse(localStorage.getItem('crackers_users')) || [];
@@ -582,6 +622,17 @@
     function initCloudSync() {
       if (!isCloudActive) return;
 
+      // 1. Sync Store Status (Online/Offline)
+      db.ref('settings/isOnline').on('value', (snap) => {
+        const val = snap.val();
+        if (val !== null) {
+          isStoreOnline = val;
+          localStorage.setItem('crackers_store_online', JSON.stringify(isStoreOnline));
+          applyStoreVisibility();
+        }
+      });
+
+      // 2. Sync Products
       db.ref('products').on('value', (snap) => {
         const val = snap.val();
         if (val) {
@@ -594,6 +645,7 @@
         }
       });
 
+      // 3. Sync Orders
       db.ref('orders').on('value', (snap) => {
         const val = snap.val();
         if (val) {
@@ -603,6 +655,7 @@
         }
       });
 
+      // 4. Sync Users
       db.ref('users').on('value', (snap) => {
         const val = snap.val();
         if (val) {
@@ -611,6 +664,48 @@
           renderAdminDashboard();
         }
       });
+    }
+
+    /* --- STORE ONLINE / OFFLINE TOGGLE --- */
+    function toggleStoreVisibility() {
+      isStoreOnline = !isStoreOnline;
+      if (isCloudActive) {
+        db.ref('settings/isOnline').set(isStoreOnline);
+      }
+      localStorage.setItem('crackers_store_online', JSON.stringify(isStoreOnline));
+      applyStoreVisibility();
+      alert(isStoreOnline ? "🟢 Website ab sabhi customers ke liye LIVE (Public) hai!" : "🔴 Website ab CUSTOMERS ke liye BAND (Offline) kar di gayi hai!");
+    }
+
+    function applyStoreVisibility() {
+      const storefront = document.getElementById('storefrontWrapper');
+      const offlineNotice = document.getElementById('storeOfflineNotice');
+      const cartBtn = document.getElementById('headerCartBtn');
+      const toggleBtn = document.getElementById('btnStoreToggle');
+
+      if (toggleBtn) {
+        if (isStoreOnline) {
+          toggleBtn.innerText = "🟢 Website: ONLINE (Public)";
+          toggleBtn.style.background = "#dcfce7";
+          toggleBtn.style.color = "#166534";
+          toggleBtn.style.border = "1px solid #86efac";
+        } else {
+          toggleBtn.innerText = "🔴 Website: OFFLINE (Private)";
+          toggleBtn.style.background = "#fee2e2";
+          toggleBtn.style.color = "#991b1b";
+          toggleBtn.style.border = "1px solid #fca5a5";
+        }
+      }
+
+      if (isStoreOnline) {
+        storefront.style.display = "block";
+        offlineNotice.style.display = "none";
+        cartBtn.style.display = "inline-block";
+      } else {
+        storefront.style.display = "none";
+        offlineNotice.style.display = "block";
+        cartBtn.style.display = "none";
+      }
     }
 
     function generateUnique6DigitOrderId() {
@@ -945,7 +1040,7 @@
             </td>
             <td>
               <div style="display:flex; gap:2px;">
-                <button onclick="openEditProductModal('${p.id}')" style="background:#f59e0b; color:white; padding:2px 4px; font-size:9px;">✏️ Edit</button>
+                <button onclick="openEditProductModal('${p.id}')" style="background:#f59e0b; color:white; padding:2px 4px; font-size:9px; border-radius:3px;">✏️ Edit</button>
                 <button onclick="deleteProductById('${p.id}')" class="btn-delete" style="padding:2px 4px; font-size:9px;">Del</button>
               </div>
             </td>
@@ -982,9 +1077,27 @@
           </tr>
         `;
       });
+
+      // Customer Orders Full List
+      const tbody = document.querySelector('#customerFullTable tbody');
+      tbody.innerHTML = '';
+      orders.forEach(o => {
+        const itemsList = o.items.map(it => `${it.name} (x${it.qty})`).join(', ');
+        tbody.innerHTML += `
+          <tr>
+            <td><b>#${o.id}</b></td>
+            <td>${o.name}</td>
+            <td><a href="tel:${o.phone}" style="color:#0284c7;">${o.phone}</a></td>
+            <td><small>${itemsList}</small></td>
+            <td>₹${o.total}</td>
+            <td>${o.date}</td>
+            <td><span class="status-badge ${o.status === 'Ready' ? 'status-ready' : 'status-packing'}">${o.status}</span></td>
+          </tr>
+        `;
+      });
     }
 
-    /* --- EDIT PATAKA DETAILS LOGIC (RESTORED) --- */
+    /* --- EDIT PATAKA DETAILS LOGIC --- */
     function openEditProductModal(id) {
       const prod = products.find(p => String(p.id) === String(id));
       if (!prod) return;
@@ -1030,7 +1143,7 @@
       }
       saveDB();
       closeEditModal();
-      alert(`"${name}" ke details update ho gaye!`);
+      alert(`"${name}" ke details cloud par update ho gaye!`);
     }
 
     function deleteProductFromModal() {
@@ -1187,6 +1300,7 @@
     function switchLanguage(lang) {}
 
     initCloudSync();
+    applyStoreVisibility();
     updateUserHeaderUI();
     renderStore();
   </script>
