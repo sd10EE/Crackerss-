@@ -101,60 +101,61 @@
     .form-box h3 { margin-bottom: 6px; font-size: 12px; color: var(--primary); }
     .form-box input, .form-box select { width: 100%; padding: 7px; margin-bottom: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; }
 
-    /* Clean Separated Media Upload Boxes */
+    /* Multi-Media Upload Section */
     .media-upload-section {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 8px;
       background: #ffffff;
       padding: 8px;
       border-radius: 6px;
       border: 1px solid #cbd5e1;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
     .media-card-upload {
       border: 1.5px dashed #94a3b8;
       border-radius: 6px;
       padding: 8px;
       text-align: center;
-      background: #f8fafc;
       cursor: pointer;
-      position: relative;
+      display: block;
     }
     .media-card-upload.photo-box { border-color: #3b82f6; background: #eff6ff; }
     .media-card-upload.video-box { border-color: #8b5cf6; background: #f5f3ff; }
     .media-card-upload input[type="file"] { display: none; }
-    
-    .media-preview-box {
-      width: 100%;
-      height: 130px;
-      background: #0f172a;
+
+    .thumb-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .thumb-slot {
+      position: relative;
+      height: 60px;
+      background: #e2e8f0;
       border-radius: 4px;
       overflow: hidden;
-      display: none;
-      margin-top: 6px;
-      position: relative;
     }
-    .media-preview-box img, .media-preview-box video {
+    .thumb-slot img, .thumb-slot video {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-    .btn-remove-media {
+    .thumb-del {
       position: absolute;
-      top: 4px;
-      right: 4px;
+      top: 2px;
+      right: 2px;
       background: rgba(220,38,38,0.9);
-      color: white;
+      color: #fff;
       border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      font-size: 11px;
+      width: 16px;
+      height: 16px;
+      font-size: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      z-index: 10;
     }
 
     .filter-bar { 
@@ -180,13 +181,33 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.04);
       position: relative;
     }
-    .card-img-wrapper { position: relative; width: 100%; height: 170px; background: #000; }
+    .card-img-wrapper { position: relative; width: 100%; height: 180px; background: #000; }
     .card-img-wrapper img, .card-img-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .badge-in { position: absolute; top: 6px; right: 6px; background: #dcfce7; color: #166534; font-size: 9px; padding: 3px 6px; border-radius: 3px; font-weight: bold; z-index: 5; }
     .badge-out { position: absolute; top: 6px; right: 6px; background: #fee2e2; color: #991b1b; font-size: 9px; padding: 3px 6px; border-radius: 3px; font-weight: bold; z-index: 5; }
     .badge-green-certified { position: absolute; top: 6px; left: 6px; background: var(--eco); color: white; font-size: 8px; padding: 2px 5px; border-radius: 3px; font-weight: bold; z-index: 5; }
-    .media-type-badge { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.7); color: #fff; font-size: 8px; padding: 2px 5px; border-radius: 3px; z-index: 5; font-weight: bold; }
-    
+
+    .card-media-strip {
+      display: flex;
+      gap: 4px;
+      padding: 4px 8px;
+      background: #f8fafc;
+      overflow-x: auto;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .strip-thumb {
+      width: 38px;
+      height: 38px;
+      border-radius: 3px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      background: #000;
+    }
+    .strip-thumb.active { border-color: var(--primary); }
+    .strip-thumb img, .strip-thumb video { width: 100%; height: 100%; object-fit: cover; }
+
     .card-body { padding: 10px; display: flex; flex-direction: column; gap: 4px; }
     .product-card h3 { font-size: 13px; font-weight: bold; }
     .product-card .cat { font-size: 10px; color: #64748b; text-transform: uppercase; }
@@ -275,7 +296,7 @@
       <!-- SELLER DASHBOARD (PIN: 46242332) -->
       <div id="adminSection">
         
-        <!-- LIVE CLOUD & WEBSITE PUBLIC / PRIVATE TOGGLE BUTTON -->
+        <!-- WEBSITE PUBLIC / PRIVATE TOGGLE BUTTON -->
         <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
           <div>
             <span style="font-size:11px; font-weight:bold; display:block;">Website Visibility:</span>
@@ -287,7 +308,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">
           <div>
             <b style="font-size:12px; color:var(--primary);">☁️ Live Global Cloud Inventory & Orders</b><br>
-            <small style="color:#64748b; font-size:9px;">Direct Phone Image/Video Uploads Active</small>
+            <small style="color:#64748b; font-size:9px;">Multi-Photo (Up to 4) + 1 Video Active</small>
           </div>
           <div style="display:flex; gap:3px;">
             <button onclick="exportCustomerDataToCSV()" style="background:#10b981; color:#fff; font-size:9px; padding:3px 5px;">📥 Orders</button>
@@ -299,7 +320,7 @@
         <div class="admin-stats" id="categoryStats"></div>
 
         <div class="admin-forms">
-          <!-- Add Product Form With Fully Separated Media Upload Boxes -->
+          <!-- Add Product Form With 4-Photos + 1-Video -->
           <div class="form-box">
             <h3>+ Naya Pataka Jodein</h3>
             <input type="text" id="newProdName" placeholder="Patake Ka Naam">
@@ -324,29 +345,26 @@
               <input type="number" id="newProdStock" placeholder="Qty">
             </div>
 
-            <!-- SEPARATE MEDIA UPLOADS FOR NEW PRODUCT -->
+            <!-- MULTI-PHOTO & VIDEO UPLOAD SECTION -->
             <div class="media-upload-section">
-              <span style="font-size:10px; font-weight:bold; color:#475569;">MEDIA CHOOSE KAREIN (PHOTO YA VIDEO):</span>
+              <span style="font-size:10px; font-weight:bold; color:#475569;">MEDIA (4 PHOTOS TAK + 1 VIDEO):</span>
               
-              <!-- 1. Photo Option -->
-              <label class="media-card-upload photo-box" for="newProdPhotoInput">
-                <span style="font-size:11px; font-weight:bold; color:#1d4ed8;">📷 Option 1: Phone Se Photo Chunein</span><br>
-                <small style="font-size:9px; color:#64748b;">(JPG / PNG Camera Photo)</small>
-                <input type="file" id="newProdPhotoInput" accept="image/*" onchange="handleDedicatedMedia(event, 'new', 'image')">
+              <label class="media-card-upload photo-box" for="newPhotosInput">
+                <span style="font-size:11px; font-weight:bold; color:#1d4ed8;">📷 Photos Chunein (Max 4 Photos)</span><br>
+                <small style="font-size:9px; color:#64748b;">(Aap ek ya 4 alag angles ki photo daal sakte hain)</small>
+                <input type="file" id="newPhotosInput" accept="image/*" multiple onchange="handleNewPhotos(event)">
               </label>
+              <div id="newPhotosPreview" class="thumb-grid"></div>
 
-              <!-- 2. Video Option -->
-              <label class="media-card-upload video-box" for="newProdVideoInput">
-                <span style="font-size:11px; font-weight:bold; color:#6d28d9;">🎥 Option 2: Phone Se Video Chunein</span><br>
-                <small style="font-size:9px; color:#64748b;">(Short Demonstration MP4 Video)</small>
-                <input type="file" id="newProdVideoInput" accept="video/*" onchange="handleDedicatedMedia(event, 'new', 'video')">
+              <label class="media-card-upload video-box" for="newVideoInput">
+                <span style="font-size:11px; font-weight:bold; color:#6d28d9;">🎥 Demo Video Chunein (Optional - 1 Video)</span><br>
+                <small style="font-size:9px; color:#64748b;">(Short demonstration clip)</small>
+                <input type="file" id="newVideoInput" accept="video/*" onchange="handleNewVideo(event)">
               </label>
-
-              <!-- Preview Display Area -->
-              <div id="newMediaPreviewWrapper" class="media-preview-box"></div>
+              <div id="newVideoPreview" style="display:none; position:relative; height:100px; background:#000; border-radius:4px; overflow:hidden; margin-top:4px;"></div>
             </div>
 
-            <button class="btn-primary" style="width:100%; font-size:11px; padding:7px;" onclick="addProductToCloud()">Save Item to Global Store</button>
+            <button id="btnAddNewProduct" class="btn-primary" style="width:100%; font-size:11px; padding:7px;" onclick="addProductToCloud()">Save Item to Global Store</button>
           </div>
 
           <!-- Customer Orders Checklist Box -->
@@ -512,7 +530,7 @@
       </div>
     </div>
 
-    <!-- EDIT PRODUCT DETAILS MODAL (WITH SEPARATED PHOTO & VIDEO BOXES) -->
+    <!-- EDIT PRODUCT DETAILS MODAL (WITH 4-PHOTOS & 1-VIDEO SUPPORT) -->
     <div class="modal" id="editProductModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -550,29 +568,27 @@
           </div>
         </div>
 
-        <!-- SEPARATED PHOTO & VIDEO BOXES FOR EDIT MODAL -->
+        <!-- EDIT MEDIA SECTION -->
         <div class="media-upload-section" style="margin-top:6px;">
-          <span style="font-size:10px; font-weight:bold; color:#475569;">MEDIA UPDATE KAREIN:</span>
+          <span style="font-size:10px; font-weight:bold; color:#475569;">MEDIA UPDATE KAREIN (MAX 4 PHOTOS + 1 VIDEO):</span>
           
-          <label class="media-card-upload photo-box" for="editProdPhotoInput">
-            <span style="font-size:11px; font-weight:bold; color:#1d4ed8;">📷 Option 1: Nayi Photo Chunein</span><br>
-            <small style="font-size:9px; color:#64748b;">(Replace current image)</small>
-            <input type="file" id="editProdPhotoInput" accept="image/*" onchange="handleDedicatedMedia(event, 'edit', 'image')">
+          <label class="media-card-upload photo-box" for="editPhotosInput">
+            <span style="font-size:11px; font-weight:bold; color:#1d4ed8;">📷 Photos Add/Replace Karein</span><br>
+            <input type="file" id="editPhotosInput" accept="image/*" multiple onchange="handleEditPhotos(event)">
           </label>
+          <div id="editPhotosPreview" class="thumb-grid"></div>
 
-          <label class="media-card-upload video-box" for="editProdVideoInput">
-            <span style="font-size:11px; font-weight:bold; color:#6d28d9;">🎥 Option 2: Nayi Video Chunein</span><br>
-            <small style="font-size:9px; color:#64748b;">(Replace current video)</small>
-            <input type="file" id="editProdVideoInput" accept="video/*" onchange="handleDedicatedMedia(event, 'edit', 'video')">
+          <label class="media-card-upload video-box" for="editVideoInput">
+            <span style="font-size:11px; font-weight:bold; color:#6d28d9;">🎥 Demo Video Add/Replace</span><br>
+            <input type="file" id="editVideoInput" accept="video/*" onchange="handleEditVideo(event)">
           </label>
-
-          <div id="editMediaPreviewWrapper" class="media-preview-box"></div>
+          <div id="editVideoPreview" style="display:none; position:relative; height:100px; background:#000; border-radius:4px; overflow:hidden; margin-top:4px;"></div>
         </div>
 
         <div style="display:flex; gap:6px; margin-top: 8px;">
           <button style="flex:1; background:#e2e8f0; font-size:11px;" onclick="closeEditModal()">Cancel</button>
           <button style="flex:1; font-size:11px;" class="btn-delete" onclick="deleteProductFromModal()">🗑️ Delete</button>
-          <button style="flex:1; font-size:11px;" class="btn-primary" onclick="saveEditedProduct()">Save Changes</button>
+          <button id="btnSaveEditedProduct" style="flex:1; font-size:11px;" class="btn-primary" onclick="saveEditedProduct()">Save Changes</button>
         </div>
       </div>
     </div>
@@ -670,19 +686,22 @@
 
     let isStoreOnline = JSON.parse(localStorage.getItem('crackers_store_online')) !== false;
     let currentUser = JSON.parse(localStorage.getItem('crackers_current_user')) || null;
-    let orders = JSON.parse(localStorage.getItem('crackers_orders')) || [];
-    let registeredUsers = JSON.parse(localStorage.getItem('crackers_users')) || [];
+    let orders = [];
+    let registeredUsers = [];
     let cart = [];
     let activeFilter = 'All';
     let cardQuantities = {};
     let currentActiveOrderId = "";
     let activeInspectingOrderId = null;
 
-    // Temporary upload store
-    let newProductMediaData = { type: 'image', data: '' };
-    let editProductMediaData = { type: 'image', data: '' };
+    // Temporary upload store: Max 4 photos + 1 video
+    let newPhotosList = [];
+    let newVideoItem = null;
 
-    let products = JSON.parse(localStorage.getItem('crackers_db')) || [
+    let editPhotosList = [];
+    let editVideoItem = null;
+
+    let products = [
       {
         id: "1",
         name: "Special 1000 Chataak Ladi",
@@ -691,8 +710,8 @@
         price: 450,
         stock: 20,
         isGreen: true,
-        mediaType: "image",
-        media: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"
+        photos: ["https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"],
+        video: null
       },
       {
         id: "2",
@@ -702,8 +721,8 @@
         price: 280,
         stock: 15,
         isGreen: true,
-        mediaType: "image",
-        media: "https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?w=400"
+        photos: ["https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?w=400"],
+        video: null
       },
       {
         id: "3",
@@ -713,98 +732,167 @@
         price: 190,
         stock: 25,
         isGreen: true,
-        mediaType: "image",
-        media: "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=400"
+        photos: ["https://images.unsplash.com/photo-1514565131-fce0801e5785?w=400"],
+        video: null
       }
     ];
 
-    /* --- DEDICATED SEPARATE MEDIA HANDLER --- */
-    function handleDedicatedMedia(event, mode, targetMediaType) {
+    /* --- CANVAS COMPRESSION FOR UP TO 4 PHOTOS --- */
+    function compressImageFile(file, callback) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 550;
+          const scale = MAX_WIDTH / img.width;
+          canvas.width = MAX_WIDTH;
+          canvas.height = img.height * scale;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          callback(canvas.toDataURL('image/jpeg', 0.72));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleNewPhotos(event) {
+      const files = Array.from(event.target.files);
+      if (!files.length) return;
+
+      const remainingSlots = 4 - newPhotosList.length;
+      if (remainingSlots <= 0) return alert("Aap pehle hi 4 photos select kar chuke hain!");
+
+      const toProcess = files.slice(0, remainingSlots);
+      toProcess.forEach(file => {
+        if (file.type.startsWith('image')) {
+          compressImageFile(file, (base64) => {
+            if (newPhotosList.length < 4) {
+              newPhotosList.push(base64);
+              renderNewPhotosPreview();
+            }
+          });
+        }
+      });
+      event.target.value = '';
+    }
+
+    function renderNewPhotosPreview() {
+      const grid = document.getElementById('newPhotosPreview');
+      grid.innerHTML = newPhotosList.map((src, idx) => `
+        <div class="thumb-slot">
+          <img src="${src}">
+          <div class="thumb-del" onclick="removeNewPhoto(${idx})">&times;</div>
+        </div>
+      `).join('');
+    }
+
+    function removeNewPhoto(idx) {
+      newPhotosList.splice(idx, 1);
+      renderNewPhotosPreview();
+    }
+
+    function handleNewVideo(event) {
       const file = event.target.files[0];
       if (!file) return;
+      if (!file.type.startsWith('video')) return alert("Sirf video clip chunein!");
+      if (file.size > 15 * 1024 * 1024) return alert("Video 15MB se choti honi chahiye!");
 
       const reader = new FileReader();
+      reader.onload = function(e) {
+        newVideoItem = e.target.result;
+        const box = document.getElementById('newVideoPreview');
+        box.style.display = 'block';
+        box.innerHTML = `
+          <video src="${newVideoItem}" controls muted autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+          <div class="thumb-del" style="top:4px; right:4px;" onclick="removeNewVideo()">&times;</div>
+        `;
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    }
 
-      if (targetMediaType === 'image') {
-        if (!file.type.startsWith('image')) return alert("Kripya image file (JPG/PNG) chunein!");
-        
-        reader.onload = function(e) {
-          const img = new Image();
-          img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 550;
-            const scale = MAX_WIDTH / img.width;
-            canvas.width = MAX_WIDTH;
-            canvas.height = img.height * scale;
+    function removeNewVideo() {
+      newVideoItem = null;
+      const box = document.getElementById('newVideoPreview');
+      box.style.display = 'none';
+      box.innerHTML = '';
+    }
 
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const compressed = canvas.toDataURL('image/jpeg', 0.72);
+    /* --- EDIT MEDIA HANDLERS --- */
+    function handleEditPhotos(event) {
+      const files = Array.from(event.target.files);
+      if (!files.length) return;
 
-            if (mode === 'new') {
-              newProductMediaData = { type: 'image', data: compressed };
-              renderMediaPreviewBox('newMediaPreviewWrapper', 'new', 'image', compressed);
-            } else {
-              editProductMediaData = { type: 'image', data: compressed };
-              renderMediaPreviewBox('editMediaPreviewWrapper', 'edit', 'image', compressed);
+      const remainingSlots = 4 - editPhotosList.length;
+      if (remainingSlots <= 0) return alert("Max 4 photos allow hain!");
+
+      const toProcess = files.slice(0, remainingSlots);
+      toProcess.forEach(file => {
+        if (file.type.startsWith('image')) {
+          compressImageFile(file, (base64) => {
+            if (editPhotosList.length < 4) {
+              editPhotosList.push(base64);
+              renderEditPhotosPreview();
             }
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      } 
-      else if (targetMediaType === 'video') {
-        if (!file.type.startsWith('video')) return alert("Kripya video file (MP4) chunein!");
-        
-        if (file.size > 15 * 1024 * 1024) {
-          return alert("Video bohot badi hai! 15MB se choti video clip chunein.");
+          });
         }
-
-        reader.onload = function(e) {
-          const videoData = e.target.result;
-          if (mode === 'new') {
-            newProductMediaData = { type: 'video', data: videoData };
-            renderMediaPreviewBox('newMediaPreviewWrapper', 'new', 'video', videoData);
-          } else {
-            editProductMediaData = { type: 'video', data: videoData };
-            renderMediaPreviewBox('editMediaPreviewWrapper', 'edit', 'video', videoData);
-          }
-        };
-        reader.readAsDataURL(file);
-      }
+      });
+      event.target.value = '';
     }
 
-    function renderMediaPreviewBox(wrapperId, mode, type, src) {
-      const wrap = document.getElementById(wrapperId);
-      wrap.style.display = 'block';
-
-      const mediaTag = type === 'video'
-        ? `<video src="${src}" controls autoplay muted playsinline style="width:100%; height:100%; object-fit:cover;"></video>`
-        : `<img src="${src}" style="width:100%; height:100%; object-fit:cover;">`;
-
-      wrap.innerHTML = `
-        <div class="btn-remove-media" onclick="clearSelectedMedia('${wrapperId}', '${mode}')" title="Remove">&times;</div>
-        ${mediaTag}
-      `;
+    function renderEditPhotosPreview() {
+      const grid = document.getElementById('editPhotosPreview');
+      grid.innerHTML = editPhotosList.map((src, idx) => `
+        <div class="thumb-slot">
+          <img src="${src}">
+          <div class="thumb-del" onclick="removeEditPhoto(${idx})">&times;</div>
+        </div>
+      `).join('');
     }
 
-    function clearSelectedMedia(wrapperId, mode) {
-      const wrap = document.getElementById(wrapperId);
-      wrap.style.display = 'none';
-      wrap.innerHTML = '';
+    function removeEditPhoto(idx) {
+      editPhotosList.splice(idx, 1);
+      renderEditPhotosPreview();
+    }
 
-      if (mode === 'new') {
-        newProductMediaData = { type: 'image', data: '' };
-        document.getElementById('newProdPhotoInput').value = '';
-        document.getElementById('newProdVideoInput').value = '';
+    function handleEditVideo(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('video')) return alert("Sirf video clip chunein!");
+      if (file.size > 15 * 1024 * 1024) return alert("Video 15MB se kam honi chahiye!");
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        editVideoItem = e.target.result;
+        renderEditVideoPreview();
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    }
+
+    function renderEditVideoPreview() {
+      const box = document.getElementById('editVideoPreview');
+      if (editVideoItem) {
+        box.style.display = 'block';
+        box.innerHTML = `
+          <video src="${editVideoItem}" controls muted autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+          <div class="thumb-del" style="top:4px; right:4px;" onclick="removeEditVideo()">&times;</div>
+        `;
       } else {
-        editProductMediaData = { type: 'image', data: '' };
-        document.getElementById('editProdPhotoInput').value = '';
-        document.getElementById('editProdVideoInput').value = '';
+        box.style.display = 'none';
+        box.innerHTML = '';
       }
     }
 
-    /* --- CLOUD REALTIME LISTENERS --- */
+    function removeEditVideo() {
+      editVideoItem = null;
+      renderEditVideoPreview();
+    }
+
+    /* --- REALTIME CLOUD LISTENERS (NO DUPLICATE RENDERING) --- */
     function initCloudSync() {
       if (!isCloudActive) return;
 
@@ -817,11 +905,11 @@
         }
       });
 
+      // SINGLE SOURCE OF TRUTH: Firebase sends the full list
       db.ref('products').on('value', (snap) => {
         const val = snap.val();
         if (val) {
           products = Object.values(val);
-          localStorage.setItem('crackers_db', JSON.stringify(products));
           renderStore();
           renderAdminDashboard();
         } else {
@@ -833,7 +921,6 @@
         const val = snap.val();
         if (val) {
           orders = Object.values(val).reverse();
-          localStorage.setItem('crackers_orders', JSON.stringify(orders));
           renderAdminDashboard();
         }
       });
@@ -842,13 +929,11 @@
         const val = snap.val();
         if (val) {
           registeredUsers = Object.values(val);
-          localStorage.setItem('crackers_users', JSON.stringify(registeredUsers));
           renderAdminDashboard();
         }
       });
     }
 
-    /* --- STORE ONLINE / OFFLINE TOGGLE --- */
     function toggleStoreVisibility() {
       isStoreOnline = !isStoreOnline;
       if (isCloudActive) {
@@ -856,7 +941,7 @@
       }
       localStorage.setItem('crackers_store_online', JSON.stringify(isStoreOnline));
       applyStoreVisibility();
-      alert(isStoreOnline ? "🟢 Website ab sabhi customers ke liye LIVE (Public) hai!" : "🔴 Website ab CUSTOMERS ke liye BAND (Offline) kar di gayi hai!");
+      alert(isStoreOnline ? "🟢 Website ab LIVE (Public) hai!" : "🔴 Website ab BAND (Offline) kar di gayi hai!");
     }
 
     function applyStoreVisibility() {
@@ -894,16 +979,6 @@
       return Math.floor(100000 + Math.random() * 900000).toString();
     }
 
-    function saveDB() {
-      localStorage.setItem('crackers_db', JSON.stringify(products));
-      localStorage.setItem('crackers_orders', JSON.stringify(orders));
-      localStorage.setItem('crackers_users', JSON.stringify(registeredUsers));
-      localStorage.setItem('crackers_current_user', JSON.stringify(currentUser));
-      renderStore();
-      renderAdminDashboard();
-      updateUserHeaderUI();
-    }
-
     function renderStore() {
       const grid = document.getElementById('productGrid');
       grid.innerHTML = '';
@@ -914,20 +989,41 @@
         const inStock = p.stock > 0;
         if (!cardQuantities[p.id]) cardQuantities[p.id] = 1;
 
-        const isVideo = p.mediaType === 'video';
-        const mediaHtml = isVideo 
-          ? `<video src="${p.media}" controls playsinline preload="metadata" style="width:100%; height:100%; object-fit:cover;"></video>`
-          : `<img src="${p.media || 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400'}" alt="${p.name}">`;
+        // Normalise media: backward compatibility
+        const photos = (p.photos && p.photos.length) ? p.photos : [p.media || 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400'];
+        const video = p.video || null;
+
+        // Strip HTML if multiple media exist
+        let stripHtml = '';
+        if (photos.length > 1 || video) {
+          stripHtml += `<div class="card-media-strip">`;
+          photos.forEach((ph, i) => {
+            stripHtml += `
+              <div class="strip-thumb ${i===0 ? 'active' : ''}" onclick="switchActiveMedia('${p.id}', 'img', '${ph}', this)">
+                <img src="${ph}">
+              </div>
+            `;
+          });
+          if (video) {
+            stripHtml += `
+              <div class="strip-thumb" onclick="switchActiveMedia('${p.id}', 'vid', '${video}', this)">
+                <video src="${video}"></video>
+              </div>
+            `;
+          }
+          stripHtml += `</div>`;
+        }
 
         grid.innerHTML += `
-          <div class="product-card">
+          <div class="product-card" id="card_${p.id}">
             ${p.isGreen ? `<span class="badge-green-certified">🌿 Eco Green</span>` : ''}
             <span class="${inStock ? 'badge-in' : 'badge-out'}">${inStock ? 'In Stock' : 'Out of Stock'}</span>
-            ${isVideo ? `<span class="media-type-badge">▶ Video Demo</span>` : ''}
             
-            <div class="card-img-wrapper">
-              ${mediaHtml}
+            <div class="card-img-wrapper" id="display_media_${p.id}">
+              <img src="${photos[0]}" alt="${p.name}">
             </div>
+
+            ${stripHtml}
 
             <div class="card-body">
               <h3>${p.name}</h3>
@@ -957,6 +1053,19 @@
       document.getElementById('categoryFilters').innerHTML = categories.map(cat => 
         `<button class="filter-btn ${activeFilter === cat ? 'active' : ''}" onclick="filterCat('${cat}')">${cat}</button>`
       ).join('');
+    }
+
+    function switchActiveMedia(prodId, type, src, element) {
+      const parentCard = document.getElementById(`card_${prodId}`);
+      parentCard.querySelectorAll('.strip-thumb').forEach(t => t.classList.remove('active'));
+      element.classList.add('active');
+
+      const viewer = document.getElementById(`display_media_${prodId}`);
+      if (type === 'vid') {
+        viewer.innerHTML = `<video src="${src}" controls autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>`;
+      } else {
+        viewer.innerHTML = `<img src="${src}" style="width:100%; height:100%; object-fit:cover;">`;
+      }
     }
 
     function filterCat(c) {
@@ -1091,7 +1200,6 @@
       if (isCloudActive) {
         db.ref('orders/' + orderId).set(orderObj);
       }
-      orders.unshift(orderObj);
 
       let itemsLines = cart.map(i => `• ${i.name} (Qty: ${i.qty}) = Rs.${i.price * i.qty}`).join("\n");
 
@@ -1120,7 +1228,6 @@
       cart = [];
       updateCartBadge();
       closeCart();
-      saveDB();
 
       document.getElementById('orderSuccessModal').style.display = 'flex';
     }
@@ -1150,9 +1257,9 @@
       if (isCloudActive) {
         db.ref('users/' + phone).set(newUser);
       }
-      registeredUsers.push(newUser);
       currentUser = newUser;
-      saveDB();
+      localStorage.setItem('crackers_current_user', JSON.stringify(currentUser));
+      updateUserHeaderUI();
       closeAuthModal();
       alert(`Namaste ${name}! Details save ho chuki hain.`);
     }
@@ -1168,7 +1275,8 @@
 
     function logoutUser() {
       currentUser = null;
-      saveDB();
+      localStorage.removeItem('crackers_current_user');
+      updateUserHeaderUI();
       alert("Aap logout ho chuke hain.");
     }
 
@@ -1215,9 +1323,13 @@
       const stockTableBody = document.querySelector('#stockTable tbody');
       stockTableBody.innerHTML = '';
       products.forEach(p => {
+        const photoCount = p.photos ? p.photos.length : (p.media ? 1 : 0);
         stockTableBody.innerHTML += `
           <tr>
-            <td><b>${p.name}</b> ${p.mediaType === 'video' ? '🎥' : '📷'}</td>
+            <td>
+              <b>${p.name}</b><br>
+              <small style="color:#64748b;">📷 ${photoCount} ${p.video ? '| 🎥 1' : ''}</small>
+            </td>
             <td>${p.category}</td>
             <td>₹${p.cost || 0}</td>
             <td><b>₹${p.price}</b></td>
@@ -1285,6 +1397,59 @@
       });
     }
 
+    /* --- ADD PRODUCT: FIXED NO DUPLICATES --- */
+    function addProductToCloud() {
+      const btn = document.getElementById('btnAddNewProduct');
+      btn.disabled = true;
+
+      const name = document.getElementById('newProdName').value.trim();
+      const category = document.getElementById('newProdCategory').value;
+      const isGreen = document.getElementById('newProdGreen').checked;
+      const cost = Number(document.getElementById('newProdCost').value) || 0;
+      const price = Number(document.getElementById('newProdPrice').value);
+      const stock = Number(document.getElementById('newProdStock').value);
+
+      if (!name || isNaN(price) || isNaN(stock)) {
+        btn.disabled = false;
+        return alert("Sahi details bharein!");
+      }
+
+      const newId = Date.now().toString();
+      const newProduct = {
+        id: newId,
+        name,
+        category,
+        isGreen,
+        cost,
+        price,
+        stock,
+        photos: newPhotosList.length ? newPhotosList : ["https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"],
+        video: newVideoItem || null
+      };
+
+      if (isCloudActive) {
+        db.ref('products/' + newId).set(newProduct).then(() => {
+          btn.disabled = false;
+          alert("Pataka Global Cloud me save ho gaya!");
+        }).catch(err => {
+          btn.disabled = false;
+          alert("Upload error: " + err.message);
+        });
+      } else {
+        btn.disabled = false;
+      }
+
+      // Reset Inputs
+      document.getElementById('newProdName').value = '';
+      document.getElementById('newProdCost').value = '';
+      document.getElementById('newProdPrice').value = '';
+      document.getElementById('newProdStock').value = '';
+      newPhotosList = [];
+      newVideoItem = null;
+      renderNewPhotosPreview();
+      removeNewVideo();
+    }
+
     /* --- EDIT PATAKA DETAILS LOGIC --- */
     function openEditProductModal(id) {
       const prod = products.find(p => String(p.id) === String(id));
@@ -1297,16 +1462,11 @@
       document.getElementById('edit_prod_price').value = prod.price;
       document.getElementById('edit_prod_stock').value = prod.stock;
 
-      editProductMediaData = {
-        type: prod.mediaType || 'image',
-        data: prod.media || ''
-      };
+      editPhotosList = prod.photos ? [...prod.photos] : (prod.media ? [prod.media] : []);
+      editVideoItem = prod.video || null;
 
-      if (editProductMediaData.data) {
-        renderMediaPreviewBox('editMediaPreviewWrapper', 'edit', editProductMediaData.type, editProductMediaData.data);
-      } else {
-        document.getElementById('editMediaPreviewWrapper').style.display = 'none';
-      }
+      renderEditPhotosPreview();
+      renderEditVideoPreview();
 
       document.getElementById('editProductModal').style.display = 'flex';
     }
@@ -1333,16 +1493,12 @@
       prod.cost = cost;
       prod.price = price;
       prod.stock = stock;
-      
-      if (editProductMediaData.data) {
-        prod.media = editProductMediaData.data;
-        prod.mediaType = editProductMediaData.type;
-      }
+      prod.photos = editPhotosList.length ? editPhotosList : ["https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"];
+      prod.video = editVideoItem || null;
 
       if (isCloudActive) {
         db.ref('products/' + id).update(prod);
       }
-      saveDB();
       closeEditModal();
       alert(`"${name}" ke details cloud par update ho gaye!`);
     }
@@ -1354,52 +1510,12 @@
       deleteProductById(id);
     }
 
-    function addProductToCloud() {
-      const name = document.getElementById('newProdName').value.trim();
-      const category = document.getElementById('newProdCategory').value;
-      const isGreen = document.getElementById('newProdGreen').checked;
-      const cost = Number(document.getElementById('newProdCost').value) || 0;
-      const price = Number(document.getElementById('newProdPrice').value);
-      const stock = Number(document.getElementById('newProdStock').value);
-
-      if (!name || isNaN(price) || isNaN(stock)) return alert("Sahi details bharein!");
-
-      const newId = Date.now().toString();
-      const newProduct = {
-        id: newId,
-        name,
-        category,
-        isGreen,
-        cost,
-        price,
-        stock,
-        mediaType: newProductMediaData.data ? newProductMediaData.type : 'image',
-        media: newProductMediaData.data || "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400"
-      };
-
-      if (isCloudActive) {
-        db.ref('products/' + newId).set(newProduct);
-      }
-      products.push(newProduct);
-      saveDB();
-
-      // Reset
-      document.getElementById('newProdName').value = '';
-      document.getElementById('newProdCost').value = '';
-      document.getElementById('newProdPrice').value = '';
-      document.getElementById('newProdStock').value = '';
-      clearSelectedMedia('newMediaPreviewWrapper', 'new');
-
-      alert("Pataka Global Cloud me save ho gaya!");
-    }
-
     function updateStockPiece(id) {
       const newStock = Number(document.getElementById(`update_qty_${id}`).value);
       const prod = products.find(p => String(p.id) === String(id));
       if (prod) {
         prod.stock = newStock;
         if (isCloudActive) db.ref('products/' + id + '/stock').set(newStock);
-        saveDB();
         alert(`${prod.name} stock update ho gaya!`);
       }
     }
@@ -1407,8 +1523,6 @@
     function deleteProductById(id) {
       if (!confirm("Kya aap sach me is patake ko delete karna chahte hain?")) return;
       if (isCloudActive) db.ref('products/' + id).remove();
-      products = products.filter(p => String(p.id) !== String(id));
-      saveDB();
       alert("Product permanently delete ho gaya!");
     }
 
@@ -1463,7 +1577,6 @@
 
       order.status = 'Ready';
       if (isCloudActive) db.ref('orders/' + order.id + '/status').set('Ready');
-      saveDB();
 
       const waMsg = `Hello *${order.name}*,%0A%0A` +
                     `Order ID: *#${order.id}*%0A` +
