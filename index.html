@@ -101,31 +101,60 @@
     .form-box h3 { margin-bottom: 6px; font-size: 12px; color: var(--primary); }
     .form-box input, .form-box select { width: 100%; padding: 7px; margin-bottom: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; }
 
-    /* Upload Box Styling */
-    .file-uploader-box {
-      border: 2px dashed #3b82f6;
-      background: #eff6ff;
-      padding: 10px;
-      border-radius: 6px;
-      text-align: center;
+    /* Clean Separated Media Upload Boxes */
+    .media-upload-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       margin-bottom: 8px;
-      cursor: pointer;
+      background: #ffffff;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
     }
-    .file-uploader-box input[type="file"] { display: none; }
-    .file-preview-wrap {
+    .media-card-upload {
+      border: 1.5px dashed #94a3b8;
+      border-radius: 6px;
+      padding: 8px;
+      text-align: center;
+      background: #f8fafc;
+      cursor: pointer;
+      position: relative;
+    }
+    .media-card-upload.photo-box { border-color: #3b82f6; background: #eff6ff; }
+    .media-card-upload.video-box { border-color: #8b5cf6; background: #f5f3ff; }
+    .media-card-upload input[type="file"] { display: none; }
+    
+    .media-preview-box {
       width: 100%;
-      height: 120px;
-      background: #000;
+      height: 130px;
+      background: #0f172a;
       border-radius: 4px;
       overflow: hidden;
       display: none;
       margin-top: 6px;
       position: relative;
     }
-    .file-preview-wrap img, .file-preview-wrap video {
+    .media-preview-box img, .media-preview-box video {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+    .btn-remove-media {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(220,38,38,0.9);
+      color: white;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
     }
 
     .filter-bar { 
@@ -156,7 +185,7 @@
     .badge-in { position: absolute; top: 6px; right: 6px; background: #dcfce7; color: #166534; font-size: 9px; padding: 3px 6px; border-radius: 3px; font-weight: bold; z-index: 5; }
     .badge-out { position: absolute; top: 6px; right: 6px; background: #fee2e2; color: #991b1b; font-size: 9px; padding: 3px 6px; border-radius: 3px; font-weight: bold; z-index: 5; }
     .badge-green-certified { position: absolute; top: 6px; left: 6px; background: var(--eco); color: white; font-size: 8px; padding: 2px 5px; border-radius: 3px; font-weight: bold; z-index: 5; }
-    .media-type-badge { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.65); color: #fff; font-size: 8px; padding: 2px 5px; border-radius: 3px; z-index: 5; }
+    .media-type-badge { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.7); color: #fff; font-size: 8px; padding: 2px 5px; border-radius: 3px; z-index: 5; font-weight: bold; }
     
     .card-body { padding: 10px; display: flex; flex-direction: column; gap: 4px; }
     .product-card h3 { font-size: 13px; font-weight: bold; }
@@ -270,9 +299,9 @@
         <div class="admin-stats" id="categoryStats"></div>
 
         <div class="admin-forms">
-          <!-- Add Product Form With Direct File Uploader -->
+          <!-- Add Product Form With Fully Separated Media Upload Boxes -->
           <div class="form-box">
-            <h3>+ Naya Pataka Jodein (Direct Media Upload)</h3>
+            <h3>+ Naya Pataka Jodein</h3>
             <input type="text" id="newProdName" placeholder="Patake Ka Naam">
             <div style="display:flex; gap:4px;">
               <select id="newProdCategory">
@@ -295,13 +324,27 @@
               <input type="number" id="newProdStock" placeholder="Qty">
             </div>
 
-            <!-- DIRECT FILE UPLOAD TRIGGER -->
-            <label class="file-uploader-box" for="newProdFileInput">
-              <span style="font-size:11px; font-weight:bold; color:#2563eb;">📷/🎥 Phone Se Photo Ya Video Chunein</span><br>
-              <small style="font-size:9px; color:#64748b;">(JPG, PNG ya Short MP4 video)</small>
-              <input type="file" id="newProdFileInput" accept="image/*,video/*" onchange="handleFileSelect(event, 'new')">
-            </label>
-            <div id="newMediaPreviewWrapper" class="file-preview-wrap"></div>
+            <!-- SEPARATE MEDIA UPLOADS FOR NEW PRODUCT -->
+            <div class="media-upload-section">
+              <span style="font-size:10px; font-weight:bold; color:#475569;">MEDIA CHOOSE KAREIN (PHOTO YA VIDEO):</span>
+              
+              <!-- 1. Photo Option -->
+              <label class="media-card-upload photo-box" for="newProdPhotoInput">
+                <span style="font-size:11px; font-weight:bold; color:#1d4ed8;">📷 Option 1: Phone Se Photo Chunein</span><br>
+                <small style="font-size:9px; color:#64748b;">(JPG / PNG Camera Photo)</small>
+                <input type="file" id="newProdPhotoInput" accept="image/*" onchange="handleDedicatedMedia(event, 'new', 'image')">
+              </label>
+
+              <!-- 2. Video Option -->
+              <label class="media-card-upload video-box" for="newProdVideoInput">
+                <span style="font-size:11px; font-weight:bold; color:#6d28d9;">🎥 Option 2: Phone Se Video Chunein</span><br>
+                <small style="font-size:9px; color:#64748b;">(Short Demonstration MP4 Video)</small>
+                <input type="file" id="newProdVideoInput" accept="video/*" onchange="handleDedicatedMedia(event, 'new', 'video')">
+              </label>
+
+              <!-- Preview Display Area -->
+              <div id="newMediaPreviewWrapper" class="media-preview-box"></div>
+            </div>
 
             <button class="btn-primary" style="width:100%; font-size:11px; padding:7px;" onclick="addProductToCloud()">Save Item to Global Store</button>
           </div>
@@ -469,7 +512,7 @@
       </div>
     </div>
 
-    <!-- EDIT PRODUCT DETAILS MODAL (WITH DIRECT FILE UPLOAD) -->
+    <!-- EDIT PRODUCT DETAILS MODAL (WITH SEPARATED PHOTO & VIDEO BOXES) -->
     <div class="modal" id="editProductModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -507,12 +550,24 @@
           </div>
         </div>
 
-        <label class="file-uploader-box" for="editProdFileInput" style="margin-top:6px;">
-          <span style="font-size:11px; font-weight:bold; color:#2563eb;">📷/🎥 Nayi Photo Ya Video Upload Karein</span><br>
-          <small style="font-size:9px; color:#64748b;">(Phone storage se direct chunein)</small>
-          <input type="file" id="editProdFileInput" accept="image/*,video/*" onchange="handleFileSelect(event, 'edit')">
-        </label>
-        <div id="editMediaPreviewWrapper" class="file-preview-wrap"></div>
+        <!-- SEPARATED PHOTO & VIDEO BOXES FOR EDIT MODAL -->
+        <div class="media-upload-section" style="margin-top:6px;">
+          <span style="font-size:10px; font-weight:bold; color:#475569;">MEDIA UPDATE KAREIN:</span>
+          
+          <label class="media-card-upload photo-box" for="editProdPhotoInput">
+            <span style="font-size:11px; font-weight:bold; color:#1d4ed8;">📷 Option 1: Nayi Photo Chunein</span><br>
+            <small style="font-size:9px; color:#64748b;">(Replace current image)</small>
+            <input type="file" id="editProdPhotoInput" accept="image/*" onchange="handleDedicatedMedia(event, 'edit', 'image')">
+          </label>
+
+          <label class="media-card-upload video-box" for="editProdVideoInput">
+            <span style="font-size:11px; font-weight:bold; color:#6d28d9;">🎥 Option 2: Nayi Video Chunein</span><br>
+            <small style="font-size:9px; color:#64748b;">(Replace current video)</small>
+            <input type="file" id="editProdVideoInput" accept="video/*" onchange="handleDedicatedMedia(event, 'edit', 'video')">
+          </label>
+
+          <div id="editMediaPreviewWrapper" class="media-preview-box"></div>
+        </div>
 
         <div style="display:flex; gap:6px; margin-top: 8px;">
           <button style="flex:1; background:#e2e8f0; font-size:11px;" onclick="closeEditModal()">Cancel</button>
@@ -663,74 +718,89 @@
       }
     ];
 
-    /* --- DIRECT IMAGE & VIDEO COMPRESSION / HANDLER --- */
-    function handleFileSelect(event, mode) {
+    /* --- DEDICATED SEPARATE MEDIA HANDLER --- */
+    function handleDedicatedMedia(event, mode, targetMediaType) {
       const file = event.target.files[0];
       if (!file) return;
 
-      const isVideo = file.type.startsWith('video');
-      const isImage = file.type.startsWith('image');
-
-      if (!isVideo && !isImage) {
-        alert("Sirf photo ya video chunein!");
-        return;
-      }
-
       const reader = new FileReader();
 
-      if (isImage) {
+      if (targetMediaType === 'image') {
+        if (!file.type.startsWith('image')) return alert("Kripya image file (JPG/PNG) chunein!");
+        
         reader.onload = function(e) {
           const img = new Image();
           img.onload = function() {
-            // Compress Image on Canvas to keep Firebase lightning fast
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 600;
-            const scaleSize = MAX_WIDTH / img.width;
+            const MAX_WIDTH = 550;
+            const scale = MAX_WIDTH / img.width;
             canvas.width = MAX_WIDTH;
-            canvas.height = img.height * scaleSize;
+            canvas.height = img.height * scale;
 
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+            const compressed = canvas.toDataURL('image/jpeg', 0.72);
 
             if (mode === 'new') {
-              newProductMediaData = { type: 'image', data: compressedBase64 };
-              showMediaPreview('newMediaPreviewWrapper', 'image', compressedBase64);
+              newProductMediaData = { type: 'image', data: compressed };
+              renderMediaPreviewBox('newMediaPreviewWrapper', 'new', 'image', compressed);
             } else {
-              editProductMediaData = { type: 'image', data: compressedBase64 };
-              showMediaPreview('editMediaPreviewWrapper', 'image', compressedBase64);
+              editProductMediaData = { type: 'image', data: compressed };
+              renderMediaPreviewBox('editMediaPreviewWrapper', 'edit', 'image', compressed);
             }
           };
           img.src = e.target.result;
         };
         reader.readAsDataURL(file);
-      } else if (isVideo) {
-        // Video file limit check (Keep videos under 15MB for browser database safety)
+      } 
+      else if (targetMediaType === 'video') {
+        if (!file.type.startsWith('video')) return alert("Kripya video file (MP4) chunein!");
+        
         if (file.size > 15 * 1024 * 1024) {
-          alert("Video bohot badi hai! Kripya 15MB se choti video chunein.");
-          return;
+          return alert("Video bohot badi hai! 15MB se choti video clip chunein.");
         }
+
         reader.onload = function(e) {
-          const videoBase64 = e.target.result;
+          const videoData = e.target.result;
           if (mode === 'new') {
-            newProductMediaData = { type: 'video', data: videoBase64 };
-            showMediaPreview('newMediaPreviewWrapper', 'video', videoBase64);
+            newProductMediaData = { type: 'video', data: videoData };
+            renderMediaPreviewBox('newMediaPreviewWrapper', 'new', 'video', videoData);
           } else {
-            editProductMediaData = { type: 'video', data: videoBase64 };
-            showMediaPreview('editMediaPreviewWrapper', 'video', videoBase64);
+            editProductMediaData = { type: 'video', data: videoData };
+            renderMediaPreviewBox('editMediaPreviewWrapper', 'edit', 'video', videoData);
           }
         };
         reader.readAsDataURL(file);
       }
     }
 
-    function showMediaPreview(wrapperId, type, src) {
+    function renderMediaPreviewBox(wrapperId, mode, type, src) {
       const wrap = document.getElementById(wrapperId);
       wrap.style.display = 'block';
-      if (type === 'video') {
-        wrap.innerHTML = `<video src="${src}" controls autoplay muted style="width:100%; height:100%; object-fit:cover;"></video>`;
+
+      const mediaTag = type === 'video'
+        ? `<video src="${src}" controls autoplay muted playsinline style="width:100%; height:100%; object-fit:cover;"></video>`
+        : `<img src="${src}" style="width:100%; height:100%; object-fit:cover;">`;
+
+      wrap.innerHTML = `
+        <div class="btn-remove-media" onclick="clearSelectedMedia('${wrapperId}', '${mode}')" title="Remove">&times;</div>
+        ${mediaTag}
+      `;
+    }
+
+    function clearSelectedMedia(wrapperId, mode) {
+      const wrap = document.getElementById(wrapperId);
+      wrap.style.display = 'none';
+      wrap.innerHTML = '';
+
+      if (mode === 'new') {
+        newProductMediaData = { type: 'image', data: '' };
+        document.getElementById('newProdPhotoInput').value = '';
+        document.getElementById('newProdVideoInput').value = '';
       } else {
-        wrap.innerHTML = `<img src="${src}" style="width:100%; height:100%; object-fit:cover;">`;
+        editProductMediaData = { type: 'image', data: '' };
+        document.getElementById('editProdPhotoInput').value = '';
+        document.getElementById('editProdVideoInput').value = '';
       }
     }
 
@@ -1215,7 +1285,7 @@
       });
     }
 
-    /* --- EDIT PATAKA DETAILS LOGIC (WITH DIRECT FILE UPLOAD) --- */
+    /* --- EDIT PATAKA DETAILS LOGIC --- */
     function openEditProductModal(id) {
       const prod = products.find(p => String(p.id) === String(id));
       if (!prod) return;
@@ -1233,7 +1303,7 @@
       };
 
       if (editProductMediaData.data) {
-        showMediaPreview('editMediaPreviewWrapper', editProductMediaData.type, editProductMediaData.data);
+        renderMediaPreviewBox('editMediaPreviewWrapper', 'edit', editProductMediaData.type, editProductMediaData.data);
       } else {
         document.getElementById('editMediaPreviewWrapper').style.display = 'none';
       }
@@ -1313,15 +1383,14 @@
       products.push(newProduct);
       saveDB();
 
-      // Reset Form
+      // Reset
       document.getElementById('newProdName').value = '';
       document.getElementById('newProdCost').value = '';
       document.getElementById('newProdPrice').value = '';
       document.getElementById('newProdStock').value = '';
-      document.getElementById('newMediaPreviewWrapper').style.display = 'none';
-      newProductMediaData = { type: 'image', data: '' };
+      clearSelectedMedia('newMediaPreviewWrapper', 'new');
 
-      alert("Pataka Phone Media ke sath Global Cloud me save ho gaya!");
+      alert("Pataka Global Cloud me save ho gaya!");
     }
 
     function updateStockPiece(id) {
